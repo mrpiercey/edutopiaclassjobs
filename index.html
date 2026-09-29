@@ -4,29 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Class Jobs Maker</title>
-<meta name="description" content="Create beautiful, printable class job cards. Pick a layout, choose your jobs, add icons, and print.">
+<meta name="description" content="Free, printable class job cards for teachers. Pick your jobs, choose a look, add pictures, and print.">
+<link rel="icon" type="image/png" href="edu_bug.png">
+<meta name="theme-color" content="#FF4C00">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;900&family=Baloo+2:wght@500;700;800&family=Lora:ital,wght@0,500;0,700;1,500&family=Patrick+Hand&family=Caveat:wght@600;700&family=Poppins:wght@400;600;700&family=Bebas+Neue&family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- Brand fonts: Poppins stands in for Gotham (Google-safe), Zilla Slab for Museo Slab, Caveat for Helping Hand -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Zilla+Slab:wght@600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <script src="lucide.min.js"></script>
 <style>
 /* ============ APP SHELL ============ */
 *{box-sizing:border-box}
 :root{
-  --ui-bg:#f4f5f7; --ui-panel:#ffffff; --ui-border:#e3e6ea; --ui-text:#1f2937; --ui-muted:#6b7280;
-  --ui-accent:#4f46e5; --ui-accent-soft:#eef2ff;
+  /* Edutopia palette */
+  --edu-orange:#FF4C00; --edu-dark-orange:#FF780D; --edu-tangerine:#FF9B0D; --edu-sunshine:#FFBC0D;
+  --edu-midnight:#1D2A44; --edu-space:#004861; --edu-pacific:#0094C7; --edu-tech:#4FD2FF;
+  --edu-purple:#532681; --edu-light-purple:#A973DF; --edu-pink:#E75CAE; --edu-salmon:#F27179;
+  --edu-teal:#00AFAB; --edu-light-teal:#2AD2C9; --edu-green:#6FB300; --edu-light-green:#BDF22E;
+  --edu-dark-grey:#333333; --edu-light-grey:#666666; --edu-cream:#FFF7ED; --edu-white:#FFFFFF;
+  /* UI roles. Electric Orange is reserved for the bug and the one primary action. */
+  --ui-bg:#F3F3F1; --ui-panel:#ffffff; --ui-border:#E3E3DF; --ui-text:var(--edu-midnight); --ui-muted:var(--edu-light-grey);
+  --ui-accent:var(--edu-space); --ui-accent-soft:#E8F3F8; --ui-focus:var(--edu-pacific);
 }
 html,body{margin:0;height:100%}
-body{font-family:'Nunito',system-ui,sans-serif;background:var(--ui-bg);color:var(--ui-text);display:flex;height:100vh;overflow:hidden}
+body{font-family:'Poppins',system-ui,sans-serif;background:var(--ui-bg);color:var(--ui-text);display:flex;height:100vh;overflow:hidden}
 button{font-family:inherit;cursor:pointer}
 input,textarea,select{font-family:inherit;font-size:14px}
 
 #sidebar{width:400px;min-width:400px;background:var(--ui-panel);border-right:1px solid var(--ui-border);display:flex;flex-direction:column;height:100vh}
-#sidebar header{padding:16px 18px 12px;border-bottom:1px solid var(--ui-border)}
-#sidebar header h1{margin:0;font-size:20px;font-weight:900;display:flex;align-items:center;gap:8px}
-#sidebar header p{margin:4px 0 0;font-size:12px;color:var(--ui-muted)}
+#sidebar header{padding:14px 18px 12px;border-bottom:1px solid var(--ui-border);display:grid;grid-template-columns:40px 1fr;column-gap:12px;align-items:center}
+#sidebar header .bug{width:40px;height:40px;display:block;grid-row:1/3}
+#sidebar header h1{margin:0;font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+#sidebar header p{margin:2px 0 0;font-size:12px;color:var(--ui-muted)}
+#sidebar header p button{border:0;background:none;padding:0;color:var(--ui-accent);font-weight:600;font-size:12px;text-decoration:underline;font-family:inherit}
 #panels{flex:1;overflow-y:auto;padding:0 18px 100px}
 section.panel{padding:16px 0;border-bottom:1px solid var(--ui-border)}
-section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ui-muted);margin:0 0 10px;font-weight:900}
+section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ui-muted);margin:0 0 10px;font-weight:700}
 .field{margin-bottom:10px}
 .field label{display:block;font-size:12px;font-weight:700;margin-bottom:4px}
 .field input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--ui-border);border-radius:8px}
@@ -38,7 +50,7 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 .swatch{border:2px solid var(--ui-border);border-radius:10px;padding:0;overflow:hidden;background:#fff;text-align:left;transition:.15s}
 .swatch:hover{transform:translateY(-1px)}
 .swatch.active{border-color:var(--ui-accent);box-shadow:0 0 0 3px var(--ui-accent-soft)}
-.swatch .sw-prev{height:46px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px}
+.swatch .sw-prev{height:46px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
 .swatch .sw-name{font-size:10px;padding:4px 6px;font-weight:700;color:var(--ui-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 .seg{display:flex;border:1px solid var(--ui-border);border-radius:8px;overflow:hidden}
@@ -52,10 +64,11 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 .jobs-tools input{flex:1;min-width:120px;padding:7px 10px;border:1px solid var(--ui-border);border-radius:8px}
 .btn{border:1px solid var(--ui-border);background:#fff;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:700;color:var(--ui-text)}
 .btn:hover{background:#f6f7f9}
-.btn.primary{background:var(--ui-accent);border-color:var(--ui-accent);color:#fff}
-.btn.primary:hover{background:#4338ca}
+.btn.primary{background:var(--edu-orange);border-color:var(--edu-orange);color:#fff}
+.btn.primary:hover{background:#E64400;border-color:#E64400}
+.btn.primary:disabled{background:#C9C9C4;border-color:#C9C9C4;cursor:not-allowed}
 .btn.small{padding:4px 8px;font-size:11px}
-.job-group-title{font-size:11px;font-weight:900;color:var(--ui-muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px}
+.job-group-title{font-size:11px;font-weight:700;color:var(--ui-muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px}
 .job{display:grid;grid-template-columns:22px 40px 1fr auto;gap:8px;align-items:center;padding:6px 6px;border-radius:8px;border:1px solid transparent}
 .job:hover{background:#f8f9fb}
 .job.selected{border-color:var(--ui-accent-soft);background:var(--ui-accent-soft)}
@@ -65,7 +78,7 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 .job .ico svg{width:24px;height:24px}
 .job .ico img{width:100%;height:100%;object-fit:contain}
 .job .ico .emoji{font-size:24px;line-height:1}
-.job .name{font-weight:800;font-size:13px}
+.job .name{font-weight:700;font-size:13px}
 .job .desc{font-size:11px;color:var(--ui-muted);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .job .actions{display:flex;gap:2px}
 .job .actions button{border:0;background:transparent;color:var(--ui-muted);padding:4px;border-radius:6px}
@@ -83,7 +96,7 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 #zoombar button{border:1px solid var(--ui-border);background:#fff;color:#374151;border-radius:6px;height:28px;min-width:28px;padding:0 8px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:700}
 #zoombar button:hover{background:#f3f4f6}
 #zoombar button:disabled{opacity:.4;cursor:default}
-#zoombar button.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
+#zoombar button.active{background:var(--ui-accent);color:#fff;border-color:var(--ui-accent)}
 #zoombar button svg{width:15px;height:15px}
 #zoombar .zpct{min-width:42px;text-align:center;font-variant-numeric:tabular-nums;color:#111}
 #preview{flex:1;min-height:0;overflow:auto;padding:20px 28px 40px;display:flex;flex-direction:row;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:20px;--pv-scale:.55}
@@ -105,7 +118,7 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 .modal .mhead{padding:14px 18px;border-bottom:1px solid var(--ui-border);display:flex;align-items:center;gap:12px}
 .modal .mhead h3{margin:0;font-size:16px;flex:1}
 .modal .tabs{display:flex;gap:4px;padding:10px 18px 0}
-.modal .tabs button{border:0;background:transparent;padding:8px 12px;font-weight:800;font-size:13px;color:var(--ui-muted);border-bottom:2px solid transparent}
+.modal .tabs button{border:0;background:transparent;padding:8px 12px;font-weight:700;font-size:13px;color:var(--ui-muted);border-bottom:2px solid transparent}
 .modal .tabs button.active{color:var(--ui-accent);border-color:var(--ui-accent)}
 .modal .mbody{padding:14px 18px;overflow:auto;flex:1}
 .modal .search{width:100%;padding:9px 12px;border:1px solid var(--ui-border);border-radius:8px;margin-bottom:12px}
@@ -134,7 +147,7 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 .card .art svg{width:60%;height:60%;stroke-width:1.6}
 .card .art img{width:100%;height:100%;object-fit:contain}
 .card .art .emoji{line-height:1}
-.card .title{font-family:var(--c-head);font-weight:800;line-height:1.05;position:relative;margin:0 0 .12in;color:var(--c-title);text-wrap:balance}
+.card .title{font-family:var(--c-head);font-weight:700;line-height:1.05;position:relative;margin:0 0 .12in;color:var(--c-title);text-wrap:balance}
 .card .jd{font-size:.62em;letter-spacing:.25em;text-transform:uppercase;font-weight:700;color:var(--c-accent);position:relative;margin-bottom:.1in}
 .card .desc{line-height:1.45;position:relative;max-width:90%;margin:0 auto auto}
 .card .assign{margin-top:auto;padding-top:.15in;font-size:.8em;opacity:.85;position:relative;width:80%}
@@ -160,62 +173,58 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 .size-quarter .card .desc{max-width:100%}
 .card.no-desc .desc,.card.no-desc .jd{display:none}
 
-/* ============ THEMES ============ */
-/* 1 Sunny Citrus */
-.t-citrus{--c-bg:#fff8e7;--c-text:#3b2f1c;--c-title:#e2591a;--c-accent:#f2a900;--c-chip:#ffe9a8;--c-head:'Fredoka',sans-serif;--c-body:'Nunito',sans-serif}
-.card.t-citrus{padding-top:.75in}
-.t-citrus .deco.a{width:200%;height:14%;background:#ffd166;top:-8%;left:-50%;transform:rotate(-3deg);border-radius:50%}
-.t-citrus .deco.b{width:70%;height:12%;background:#ffb703;bottom:-6%;right:-10%;border-radius:50%;opacity:.5}
-/* 2 Ocean Breeze */
-.t-ocean{--c-bg:#eef8fb;--c-text:#123c4d;--c-title:#0b6e8f;--c-accent:#22a6c3;--c-chip:#ffffff;--c-head:'Quicksand',sans-serif;--c-body:'Nunito',sans-serif}
-.t-ocean .deco.a{inset:.18in;border:3px solid #22a6c3;border-radius:.35in}
-.t-ocean .deco.b{width:100%;height:16%;bottom:0;left:0;background:radial-gradient(circle at 50% 120%,#bde8f2 0,#bde8f2 60%,transparent 61%);opacity:.9}
-/* 3 Forest Notebook */
-.t-forest{--c-bg:#f3f6ee;--c-text:#233521;--c-title:#2f5d3a;--c-accent:#6a994e;--c-chip:#e0eccf;--c-head:'Lora',serif;--c-body:'Nunito',sans-serif}
-.t-forest .deco.a{inset:.14in;border:2px solid #6a994e;border-radius:.1in}
-.t-forest .deco.b{inset:.22in;border:1px solid #6a994e;border-radius:.06in;opacity:.7}
-/* 4 Berry Pop */
-.t-berry{--c-bg:#ffffff;--c-text:#3a1f36;--c-title:#a4133c;--c-accent:#ff4d6d;--c-chip:#ffe3ea;--c-head:'Baloo 2',sans-serif;--c-body:'Nunito',sans-serif}
-.t-berry .deco.a{width:100%;height:.35in;top:0;left:0;background:repeating-linear-gradient(90deg,#ff4d6d 0 .5in,#ffb3c1 .5in 1in)}
-.t-berry .deco.b{width:100%;height:.35in;bottom:0;left:0;background:repeating-linear-gradient(90deg,#ffb3c1 0 .5in,#ff4d6d .5in 1in)}
-/* 5 Chalkboard */
-.t-chalk{--c-bg:#2f4f3f;--c-text:#f4f1de;--c-title:#ffffff;--c-accent:#f2cc8f;--c-chip:#3f6a54;--c-head:'Patrick Hand',cursive;--c-body:'Patrick Hand',cursive}
-.t-chalk .deco.a{inset:.2in;border:3px dashed #f4f1de;border-radius:.2in;opacity:.7}
-.t-chalk .deco.b{width:3in;height:.6in;bottom:.35in;right:.4in;border-bottom:2px solid #f2cc8f;opacity:.5;transform:rotate(-2deg)}
-/* 6 Pastel Sky */
-.t-pastel{--c-bg:#fdf6ff;--c-text:#4a3d55;--c-title:#7b5ea7;--c-accent:#c3a6e0;--c-chip:#ffffff;--c-head:'Fredoka',sans-serif;--c-body:'Quicksand',sans-serif}
-.t-pastel .deco.a{width:2.6in;height:2.6in;border-radius:50%;background:#dfe9ff;top:-1in;left:-1in}
-.t-pastel .deco.b{width:3in;height:3in;border-radius:50%;background:#ffe6f0;bottom:-1.3in;right:-1.2in}
-.t-pastel .deco.c{width:1.4in;height:1.4in;border-radius:50%;background:#e5ffe9;bottom:.6in;left:-.5in}
-/* 7 Retro Diner */
-.t-retro{--c-bg:#fdf0d5;--c-text:#3d1e1e;--c-title:#c1121f;--c-accent:#003049;--c-chip:#ffffff;--c-head:'Bebas Neue',sans-serif;--c-body:'Nunito',sans-serif}
-.card.t-retro .title{letter-spacing:.04em;font-weight:400}
-.t-retro .deco.a{inset:.15in;border:4px double #003049;border-radius:.05in}
-.t-retro .deco.b{width:100%;height:.25in;left:0;bottom:.15in;background:repeating-linear-gradient(90deg,#003049 0 .25in,transparent .25in .5in);opacity:.15}
-/* 8 Kraft Paper */
-.t-kraft{--c-bg:#e9dcc4;--c-text:#3e2f22;--c-title:#5c3d2e;--c-accent:#b56a45;--c-chip:#f7efe1;--c-head:'Caveat',cursive;--c-body:'Lora',serif}
-.card.t-kraft .title{font-size:3.1em;font-weight:700}
-.t-kraft .deco.a{inset:.25in;border:2px solid #5c3d2e;border-radius:2px;opacity:.5}
-.t-kraft .deco.b{width:1.6in;height:.45in;background:#f5c6b0;top:.05in;left:50%;transform:translateX(-50%) rotate(-2deg);opacity:.85}
-/* 9 Clean Mono */
-.t-mono{--c-bg:#ffffff;--c-text:#1a1a1a;--c-title:#111111;--c-accent:#111111;--c-chip:#f0f0f0;--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
-.t-mono .deco.a{inset:.2in;border:2px solid #111}
-.card.t-mono .jd{border-top:1px solid #111;border-bottom:1px solid #111;padding:.06in 0;display:inline-block}
-/* 10 Confetti */
-.t-confetti{--c-bg:#ffffff;--c-text:#2b2d42;--c-title:#2b2d42;--c-accent:#ef476f;--c-chip:#fff3b0;--c-head:'Baloo 2',sans-serif;--c-body:'Nunito',sans-serif}
-.t-confetti .deco.a{inset:0;background-image:
-  radial-gradient(circle,#ef476f 3px,transparent 4px),radial-gradient(circle,#ffd166 3px,transparent 4px),
-  radial-gradient(circle,#06d6a0 3px,transparent 4px),radial-gradient(circle,#118ab2 3px,transparent 4px);
-  background-size:1.3in 1.3in,1.1in 1.1in,1.6in 1.6in,0.9in 0.9in;background-position:0 0,.4in .6in,.8in .2in,.2in .9in;opacity:.35}
-.t-confetti .deco.b{inset:.2in;border:3px solid #ffd166;border-radius:.3in;background:rgba(255,255,255,.85)}
-/* 11 Rainbow Stripe */
-.t-rainbow{--c-bg:#ffffff;--c-text:#2d3142;--c-title:#2d3142;--c-accent:#5e60ce;--c-chip:#eef0ff;--c-head:'Fredoka',sans-serif;--c-body:'Nunito',sans-serif}
-.t-rainbow .deco.a{left:0;top:0;bottom:0;width:.3in;background:linear-gradient(180deg,#ff595e,#ffca3a,#8ac926,#1982c4,#6a4c93)}
-.card.t-rainbow{padding-left:.7in}
-/* 12 Night Sky */
-.t-night{--c-bg:#1b1f3b;--c-text:#e8e9f3;--c-title:#ffffff;--c-accent:#ffd166;--c-chip:#2c3160;--c-head:'Poppins',sans-serif;--c-body:'Nunito',sans-serif}
-.t-night .deco.a{inset:0;background-image:radial-gradient(circle,#fff 1px,transparent 2px),radial-gradient(circle,#fff .8px,transparent 1.6px);background-size:1.2in 1.2in,.7in .7in;background-position:.3in .5in,.9in .1in;opacity:.7}
-.t-night .deco.b{width:1.2in;height:1.2in;border-radius:50%;top:.4in;right:.5in;box-shadow:.25in -.1in 0 0 #ffd166;opacity:.9}
+/* ============ THEMES (Edutopia palette) ============ */
+/* Fonts: Poppins (Gotham stand-in), Zilla Slab (Museo Slab stand-in), Caveat (Helping Hand stand-in) */
+/* 1 Edutopia Orange */
+.t-edu{--c-bg:#fff;--c-text:#1D2A44;--c-title:#1D2A44;--c-accent:#FF4C00;--c-chip:#FFF7ED;--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.t-edu .deco.a{top:0;left:0;width:100%;height:.3in;background:#FF4C00}
+.t-edu .deco.b{bottom:.3in;left:15%;width:70%;height:2px;background:#FF4C00}
+.card.t-edu{padding-top:.7in}
+/* 2 Sunshine */
+.t-sunshine{--c-bg:#FFF7ED;--c-text:#1D2A44;--c-title:#FF780D;--c-accent:#FFBC0D;--c-chip:#fff;--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.t-sunshine .deco.a{width:3.2in;height:3.2in;border-radius:50%;background:#FFBC0D;top:-1.4in;right:-1.2in;opacity:.35}
+.t-sunshine .deco.b{width:2.2in;height:2.2in;border-radius:50%;background:#FF9B0D;bottom:-1in;left:-.8in;opacity:.25}
+/* 3 Tangerine Stripe */
+.t-stripe{--c-bg:#fff;--c-text:#1D2A44;--c-title:#1D2A44;--c-accent:#FF9B0D;--c-chip:rgba(255,155,13,.15);--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.t-stripe .deco.a{left:0;top:0;bottom:0;width:.3in;background:linear-gradient(180deg,#FF4C00 0 25%,#FF780D 25% 50%,#FF9B0D 50% 75%,#FFBC0D 75%)}
+.card.t-stripe{padding-left:.7in}
+/* 4 Midnight Blue */
+.t-midnight{--c-bg:#1D2A44;--c-text:#fff;--c-title:#fff;--c-accent:#FFBC0D;--c-chip:#004861;--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.t-midnight .deco.a{inset:.2in;border:1px solid rgba(255,255,255,.35);border-radius:.15in}
+/* 5 Pacific Blue */
+.t-pacific{--c-bg:#fff;--c-text:#1D2A44;--c-title:#0094C7;--c-accent:#004861;--c-chip:rgba(79,210,255,.22);--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.t-pacific .deco.a{inset:.18in;border:3px solid #0094C7;border-radius:.3in}
+.t-pacific .deco.b{width:100%;height:14%;bottom:0;left:0;background:radial-gradient(circle at 50% 130%,rgba(79,210,255,.35) 0 60%,transparent 61%)}
+/* 6 Teal */
+.t-teal{--c-bg:#fff;--c-text:#1D2A44;--c-title:#00AFAB;--c-accent:#00AFAB;--c-chip:rgba(42,210,201,.2);--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.t-teal .deco.a{width:100%;height:.3in;top:0;left:0;background:repeating-linear-gradient(90deg,#00AFAB 0 .5in,#2AD2C9 .5in 1in)}
+.t-teal .deco.b{width:100%;height:.3in;bottom:0;left:0;background:repeating-linear-gradient(90deg,#2AD2C9 0 .5in,#00AFAB .5in 1in)}
+/* 7 Green */
+.t-green{--c-bg:#fff;--c-text:#1D2A44;--c-title:#6FB300;--c-accent:#6FB300;--c-chip:rgba(189,242,46,.35);--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.t-green .deco.a{inset:.14in;border:2px solid #6FB300;border-radius:.1in}
+.t-green .deco.b{inset:.22in;border:1px solid #BDF22E;border-radius:.06in}
+/* 8 Purple */
+.t-purple{--c-bg:#fff;--c-text:#1D2A44;--c-title:#532681;--c-accent:#A973DF;--c-chip:rgba(169,115,223,.18);--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.t-purple .deco.a{width:3in;height:3in;border-radius:50%;background:#A973DF;bottom:-1.3in;right:-1.2in;opacity:.3}
+.t-purple .deco.b{width:2in;height:2in;border-radius:50%;background:#532681;top:-.9in;left:-.8in;opacity:.15}
+/* 9 Pink */
+.t-pink{--c-bg:#fff;--c-text:#1D2A44;--c-title:#E75CAE;--c-accent:#F27179;--c-chip:rgba(242,113,121,.18);--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.t-pink .deco.a{inset:0;background-image:radial-gradient(circle,#E75CAE 3px,transparent 4px),radial-gradient(circle,#F27179 3px,transparent 4px),radial-gradient(circle,#FFBC0D 3px,transparent 4px);background-size:1.3in 1.3in,1.1in 1.1in,1.6in 1.6in;background-position:0 0,.4in .6in,.8in .2in;opacity:.35}
+.t-pink .deco.b{inset:.2in;border:3px solid #F27179;border-radius:.3in;background:rgba(255,255,255,.88)}
+/* 10 Editorial Slab */
+.t-slab{--c-bg:#fff;--c-text:#333333;--c-title:#1D2A44;--c-accent:#FF4C00;--c-chip:#F2F2F0;--c-head:'Zilla Slab',serif;--c-body:'Poppins',sans-serif}
+.card.t-slab .title{font-size:3em;font-weight:700}
+.card.t-slab .cls{color:#333333;letter-spacing:.14em}
+.card.t-slab .jd{border-top:1px solid #333;border-bottom:1px solid #333;padding:.06in 0;display:inline-block;color:#333}
+.t-slab .deco.a{top:.32in;left:50%;width:.6in;height:3px;background:#FF4C00;transform:translateX(-50%)}
+/* 11 Handwritten */
+.t-hand{--c-bg:#FFF7ED;--c-text:#333333;--c-title:#004861;--c-accent:#FF9B0D;--c-chip:#fff;--c-head:'Caveat',cursive;--c-body:'Poppins',sans-serif}
+.card.t-hand .title{font-size:3.3em;font-weight:700}
+.card.t-hand .cls{font-family:'Poppins',sans-serif}
+.t-hand .deco.a{inset:.22in;border:2px dashed #004861;border-radius:.2in;opacity:.5}
+/* 12 Clean & Simple */
+.t-clean{--c-bg:#fff;--c-text:#333333;--c-title:#333333;--c-accent:#666666;--c-chip:#F2F2F0;--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.t-clean .deco.a{inset:.2in;border:2px solid #333}
 
 @media (max-width:900px){
   body{flex-direction:column;height:auto;overflow:auto}
@@ -225,16 +234,83 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
   #stage{height:auto}
   #preview{padding:16px;overflow:visible}
 }
+/* ============ WELCOME SCREEN ============ */
+#welcome{display:none;position:fixed;inset:0;z-index:40;background:var(--ui-bg);overflow:auto}
+body.welcome #welcome{display:block}
+body.welcome #sidebar,body.welcome #stage{visibility:hidden}
+.w-inner{max-width:1040px;margin:0 auto;padding:36px 24px 120px}
+.w-head{display:flex;align-items:center;gap:18px;margin-bottom:18px}
+.w-head .bug{width:64px;height:64px;flex-shrink:0}
+.w-head h1{margin:0;font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.w-head p{margin:4px 0 0;font-size:14px;color:var(--ui-muted)}
+.w-intro{background:#fff;border:1px solid var(--ui-border);border-radius:14px;padding:18px 20px;font-size:15px;line-height:1.55;margin:0 0 22px;max-width:760px}
+.w-intro strong{color:var(--edu-space)}
+.w-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.w-tools input{flex:1;min-width:200px;padding:10px 12px;border:1px solid var(--ui-border);border-radius:10px;font-size:14px;background:#fff}
+.w-tools .btn{padding:9px 12px;font-size:13px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:8px}
+.tile{position:relative;display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:start;border:1.5px solid var(--ui-border);border-radius:12px;padding:12px;background:#fff;cursor:pointer;text-align:left;transition:.12s;font-family:inherit;color:var(--ui-text)}
+.tile:hover{border-color:var(--ui-accent)}
+.tile.on{border-color:var(--ui-accent);background:var(--ui-accent-soft);box-shadow:inset 0 0 0 1px var(--ui-accent)}
+.tile .ico{width:44px;height:44px;border-radius:10px;background:var(--edu-cream);display:flex;align-items:center;justify-content:center;color:var(--edu-space);overflow:hidden}
+.tile.on .ico{background:#fff}
+.tile .ico svg{width:26px;height:26px}
+.tile .ico img{width:100%;height:100%;object-fit:contain}
+.tile .ico .emoji{font-size:26px;line-height:1}
+.tile .name{font-weight:600;font-size:14px;line-height:1.25;padding-right:22px}
+.tile .desc{font-size:12px;color:var(--ui-muted);line-height:1.35;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tile .tick{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ui-border);background:#fff;display:flex;align-items:center;justify-content:center;color:#fff}
+.tile .tick svg{width:13px;height:13px;display:none}
+.tile.on .tick{background:var(--ui-accent);border-color:var(--ui-accent)}
+.tile.on .tick svg{display:block}
+.w-foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--ui-border);padding:12px 24px;display:flex;justify-content:center}
+.w-foot .inner{width:100%;max-width:1040px;display:flex;align-items:center;gap:14px}
+.w-foot #wCount{font-size:13px;color:var(--ui-muted);margin-right:auto}
+.w-foot .btn.primary{padding:12px 22px;font-size:15px;border-radius:10px}
+.w-foot .btn.primary svg{width:18px;height:18px;vertical-align:-4px;margin-left:4px}
+@media (max-width:600px){ .w-head h1{font-size:24px} .w-head .bug{width:48px;height:48px} .w-inner{padding:20px 16px 110px} }
+
+/* ============ EXPORT CHOICES ============ */
+.export-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.export-opt{border:1.5px solid var(--ui-border);border-radius:14px;padding:18px 16px;background:#fff;text-align:left;font-family:inherit;color:var(--ui-text);display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:.12s}
+.export-opt:hover{border-color:var(--ui-accent);background:var(--ui-accent-soft)}
+.export-opt .eo-ico{width:44px;height:44px;border-radius:12px;background:var(--edu-cream);color:var(--edu-space);display:flex;align-items:center;justify-content:center}
+.export-opt .eo-ico svg{width:24px;height:24px}
+.export-opt strong{font-size:15px}
+.export-opt span{font-size:12px;color:var(--ui-muted);line-height:1.45}
+@media (max-width:600px){ .export-opts{grid-template-columns:1fr} }
+
+/* ============ SLIDESHOW ============ */
+#show{display:none;position:fixed;inset:0;z-index:60;background:#1D2A44;flex-direction:column;align-items:center;justify-content:center}
+#show.open{display:flex}
+#show .stage{position:relative;width:calc(11in * var(--ss,1));height:calc(8.5in * var(--ss,1))}
+#show .sheet{width:11in;height:8.5in;transform:scale(var(--ss,1));transform-origin:top left;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+#show .sheet .grid{grid-template-columns:1fr;grid-template-rows:1fr}
+#show .card{padding:.6in 1.2in}
+#show .card .art .chip{width:3in;height:3in}
+#show .card .art img{width:3in;height:3in}
+#show .card .art .emoji{font-size:2in}
+#show .card .toolbar{display:none}
+#show .card [contenteditable]{pointer-events:none;outline:none}
+#show .card .art{pointer-events:none}
+#show .ss-bar{position:fixed;left:0;right:0;bottom:0;padding:12px 18px;display:flex;align-items:center;justify-content:center;gap:10px;color:#fff;font-size:13px;background:linear-gradient(transparent,rgba(0,0,0,.35))}
+#show .ss-bar button{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;border-radius:8px;height:36px;min-width:36px;padding:0 12px;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;font-weight:600;font-size:13px}
+#show .ss-bar button:hover{background:rgba(255,255,255,.22)}
+#show .ss-bar button svg{width:18px;height:18px}
+#show .ss-bar .ss-count{min-width:70px;text-align:center;font-variant-numeric:tabular-nums}
+#show .ss-bar .ss-exit{margin-left:18px}
+#show .ss-hint{position:fixed;top:14px;right:18px;color:rgba(255,255,255,.6);font-size:12px}
+
 /* ============ EDIT-IN-PLACE (screen only) ============ */
 .card [contenteditable]{cursor:text;border-radius:4px;outline:2px dashed transparent;outline-offset:3px;transition:outline-color .15s}
 .card [contenteditable]:hover{outline-color:rgba(0,0,0,.25)}
-.card [contenteditable]:focus{outline-color:#4f46e5;outline-style:solid;background:rgba(255,255,255,.35)}
+.card [contenteditable]:focus{outline-color:var(--ui-focus);outline-style:solid;background:rgba(255,255,255,.35)}
 .card .art{cursor:pointer;border-radius:50%}
 .card .art:hover{outline:2px dashed rgba(0,0,0,.3);outline-offset:6px}
 .card .toolbar{position:absolute;top:8px;right:8px;display:flex;gap:4px;opacity:0;transition:.15s;z-index:5;transform:scale(calc(1 / var(--pv-scale, 1)));transform-origin:top right}
 .card:hover .toolbar{opacity:1}
 .card .toolbar button{border:0;background:rgba(255,255,255,.95);color:#374151;border-radius:6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer}
-.card .toolbar button:hover{background:#4f46e5;color:#fff}
+.card .toolbar button:hover{background:var(--ui-accent);color:#fff}
 .card .toolbar svg{width:15px;height:15px}
 .edit-hint{font-size:12px;color:var(--ui-muted);text-align:center;margin:0;width:100%}
 
@@ -242,7 +318,8 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 @page{size:letter portrait;margin:0}
 @media print{
   html,body{height:auto;overflow:visible;background:#fff;display:block}
-  #sidebar,#zoombar,.modal-bg,#preview .hint,.card .toolbar,.edit-hint{display:none !important}
+  #sidebar,#zoombar,#welcome,#show,.modal-bg,#preview .hint,.card .toolbar,.edit-hint{display:none !important}
+  body.welcome #stage{visibility:visible}
   #stage{display:block;height:auto}
   .sheet-wrap{width:auto;height:auto}
   .sheet{transform:none}
@@ -253,12 +330,47 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 }
 </style>
 </head>
-<body>
+<body class="welcome">
+<script>/* decide before first paint whether to show the start screen */
+try{ if((JSON.parse(localStorage.getItem('classJobsMaker.v1'))||{}).started) document.body.className=''; }catch(e){}</script>
+
+<div id="welcome">
+  <div class="w-inner">
+    <div class="w-head">
+      <img class="bug" src="edu_bug.png" alt="Edutopia">
+      <div><h1>Class Jobs Maker</h1><p>Free, printable class job cards for your classroom.</p></div>
+    </div>
+    <p class="w-intro"><strong>Start by picking the jobs you want.</strong> Tap any job to add it. On the next screen you can choose a look, change any words or pictures, and then export your cards as a PDF or a slideshow. Nothing to sign in to. Your work saves in this browser.</p>
+    <div class="w-tools">
+      <input type="text" id="wSearch" placeholder="Search jobs...">
+      <button class="btn" id="wClassics">Pick the classics</button>
+      <button class="btn" id="wClear">Clear</button>
+    </div>
+    <div id="wGrid"></div>
+  </div>
+  <div class="w-foot"><div class="inner">
+    <span id="wCount">Pick at least one job to continue</span>
+    <button class="btn primary" id="wGo" disabled>Make my cards<i data-lucide="arrow-right"></i></button>
+  </div></div>
+</div>
+
+<div id="show" aria-label="Slideshow">
+  <div class="ss-hint">Arrow keys to move. Esc to exit.</div>
+  <div class="stage" id="ssStage"></div>
+  <div class="ss-bar">
+    <button id="ssPrev" title="Previous"><i data-lucide="chevron-left"></i></button>
+    <span class="ss-count" id="ssCount">1 / 1</span>
+    <button id="ssNext" title="Next"><i data-lucide="chevron-right"></i></button>
+    <button id="ssFull" title="Full screen"><i data-lucide="maximize"></i>Full screen</button>
+    <button id="ssExit" class="ss-exit"><i data-lucide="x"></i>Exit</button>
+  </div>
+</div>
 
 <aside id="sidebar">
   <header>
-    <h1><i data-lucide="briefcase"></i> Class Jobs Maker</h1>
-    <p>Pick a look, check your jobs, print. Your work saves automatically in this browser.</p>
+    <img class="bug" src="edu_bug.png" alt="Edutopia">
+    <h1>Class Jobs Maker</h1>
+    <p>Your work saves in this browser. <button id="backToWelcome" type="button">Back to the start screen</button></p>
   </header>
 
   <div id="panels">
@@ -305,7 +417,7 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 
   <footer>
     <span id="count">0 jobs</span>
-    <button class="btn primary" id="printBtn"><i data-lucide="printer" style="width:16px;height:16px;vertical-align:-3px"></i> Print / Save as PDF</button>
+    <button class="btn primary" id="exportBtn"><i data-lucide="download" style="width:16px;height:16px;vertical-align:-3px"></i> Export</button>
   </footer>
 </aside>
 
@@ -352,6 +464,28 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
   </div>
 </div>
 
+<!-- Export modal -->
+<div class="modal-bg" id="exportModal">
+  <div class="modal" style="width:560px">
+    <div class="mhead"><h3>5. Export your cards</h3><button class="btn" data-close>Close</button></div>
+    <div class="mbody">
+      <div class="export-opts">
+        <button type="button" class="export-opt" id="exportPdf">
+          <div class="eo-ico"><i data-lucide="file-text"></i></div>
+          <strong>PDF</strong>
+          <span>Opens the print window. Choose <b>Save as PDF</b> as the printer, or send it straight to a printer. Turn on "Background graphics" so the colors print.</span>
+        </button>
+        <button type="button" class="export-opt" id="exportShow">
+          <div class="eo-ico"><i data-lucide="presentation"></i></div>
+          <strong>Slideshow</strong>
+          <span>Show one job per slide on your projector or smartboard. Use the arrow keys to move between jobs, and go full screen for class.</span>
+        </button>
+      </div>
+      <p class="tip">Your picks stay saved in this browser, so you can come back and export again any time.</p>
+    </div>
+  </div>
+</div>
+
 <!-- Edit job modal -->
 <div class="modal-bg" id="editModal">
   <div class="modal" style="width:480px">
@@ -360,25 +494,25 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
       <div class="field"><label>Job title</label><input type="text" id="editName"></div>
       <div class="field"><label>Job description</label><textarea id="editDesc"></textarea></div>
     </div>
-    <div class="mfoot"><button class="btn" id="editDelete" style="margin-right:auto;color:#b91c1c">Delete job</button><button class="btn primary" id="editSave">Save</button></div>
+    <div class="mfoot"><button class="btn" id="editDelete" style="margin-right:auto;color:#B3310C">Delete job</button><button class="btn primary" id="editSave">Save</button></div>
   </div>
 </div>
 
 <script>
 /* ================= DATA ================= */
 const THEMES = [
-  {id:'citrus',  name:'Sunny Citrus',   bg:'#fff8e7', fg:'#e2591a'},
-  {id:'ocean',   name:'Ocean Breeze',   bg:'#eef8fb', fg:'#0b6e8f'},
-  {id:'forest',  name:'Forest Notebook',bg:'#f3f6ee', fg:'#2f5d3a'},
-  {id:'berry',   name:'Berry Pop',      bg:'#ffe3ea', fg:'#a4133c'},
-  {id:'chalk',   name:'Chalkboard',     bg:'#2f4f3f', fg:'#f4f1de'},
-  {id:'pastel',  name:'Pastel Sky',     bg:'#fdf6ff', fg:'#7b5ea7'},
-  {id:'retro',   name:'Retro Diner',    bg:'#fdf0d5', fg:'#c1121f'},
-  {id:'kraft',   name:'Kraft Paper',    bg:'#e9dcc4', fg:'#5c3d2e'},
-  {id:'mono',    name:'Clean & Simple', bg:'#ffffff', fg:'#111111'},
-  {id:'confetti',name:'Confetti',       bg:'#fff3b0', fg:'#ef476f'},
-  {id:'rainbow', name:'Rainbow Stripe', bg:'#eef0ff', fg:'#5e60ce'},
-  {id:'night',   name:'Night Sky',      bg:'#1b1f3b', fg:'#ffd166'},
+  {id:'edu',      name:'Edutopia Orange', bg:'#ffffff', fg:'#FF4C00'},
+  {id:'sunshine', name:'Sunshine',        bg:'#FFF7ED', fg:'#FF780D'},
+  {id:'stripe',   name:'Tangerine Stripe',bg:'#ffffff', fg:'#FF9B0D'},
+  {id:'midnight', name:'Midnight Blue',   bg:'#1D2A44', fg:'#FFBC0D'},
+  {id:'pacific',  name:'Pacific Blue',    bg:'#ffffff', fg:'#0094C7'},
+  {id:'teal',     name:'Teal',            bg:'#ffffff', fg:'#00AFAB'},
+  {id:'green',    name:'Green',           bg:'#ffffff', fg:'#6FB300'},
+  {id:'purple',   name:'Purple',          bg:'#ffffff', fg:'#532681'},
+  {id:'pink',     name:'Pink',            bg:'#ffffff', fg:'#E75CAE'},
+  {id:'slab',     name:'Editorial Slab',  bg:'#ffffff', fg:'#1D2A44'},
+  {id:'hand',     name:'Handwritten',     bg:'#FFF7ED', fg:'#004861'},
+  {id:'clean',    name:'Clean & Simple',  bg:'#ffffff', fg:'#333333'},
 ];
 
 // featured = the classics that show up first. 50 jobs total.
@@ -456,13 +590,11 @@ bookmark list-checks list-todo check-check check-circle-2 circle-help info alert
 const EMOJI = ('🌱 🌿 🌻 🌷 🌵 🍀 🌳 🍁 🐦 🐱 🐶 🐢 🐸 🐝 🦋 🐠 🦉 🐰 🦜 🐾 🧹 🗑️ ♻️ 🧽 🧼 ☀️ ⛅ 🌧️ ⛈️ 🌈 ❄️ 🌡️ 💰 🪙 💵 🏦 🧮 🎨 🖌️ 🖼️ ✏️ 📝 📖 📚 📰 📬 ✉️ 📣 🎤 🎧 🎵 🎶 🎸 🥁 🎹 📷 📸 🎬 💻 🖥️ ⌨️ 🖱️ 🔌 🔋 💡 🔦 🕯️ 🚪 🔑 🔒 🕐 ⏰ ⏳ 📅 🗓️ 📌 📎 ✂️ 📏 📐 🧪 🔬 🔭 🧲 🚀 🛰️ 🌍 🗺️ 🧭 🏳️ 🚩 🏆 🥇 🎖️ 🏅 👑 🎁 🎉 🎊 🎈 🎂 🍎 🍌 🍊 🍕 🥪 🍪 🥛 🍿 🥕 🧃 🍽️ 🍴 ⚽ 🏀 🏈 ⚾ 🎾 🏐 🥏 🛹 🚲 🛴 🏃 🚶 🧍 👫 👥 🙋 🤝 🙌 👏 👋 ✋ 🖐️ 💪 🧠 👀 👂 😀 😄 😂 🤣 😎 🤔 🤓 🧐 🥳 🤩 😴 🦸 🧙 🧑‍🚀 🧑‍🔬 🧑‍🏫 🧑‍🎨 🧑‍🍳 🧑‍🌾 🧑‍💻 🧑‍🚒 🕵️ 🧑‍⚕️ 🛠️ 🔧 🔨 🪛 🧰 🪜 🎒 👓 🧢 📦 🛒 🏷️ 🎟️ 🧩 🎲 🎮 🎯 🪁 🪀 🧸 🛎️ 📯 🔔 📻 📺 🚌 🚗 🚂 ✈️ ⛵ 🏠 🏫 🏰 ⛺ 🏕️ 🌋 🏔️ 🌊 🌙 ⭐ 🌟 ✨ ⚡ 🔥 💧 🌪️ 🪴 🐛 🐞 🦎 🐍 🦖 🦕 🐲 🦄 🐴 🐮 🐷 🐑 🐔 🦆 🦢 🦩 🐧 🦈 🐬 🐳 🦀 🦞 🐌 🕷️ 🦔 🦫 🦥 🦘 🐨 🐼 🐻 🦁 🐯 🦒 🐘 🦏 🦓 🐒 🦍 🐿️ 🦇 🐺 🦊 🦝 🦡 🐗 🐎').split(' ');
 
 const FEATURED_IDS = JOBS.filter(j=>j.featured).map(j=>j.id);
-// The five jobs that are already picked the first time someone opens the site
-const STARTER_IDS = ['lineleader','custodian','librarian','tech','messenger'];
 
 /* ================= STATE ================= */
 const STORAGE_KEY = 'classJobsMaker.v1';
 let state = {
-  className:'', classYear:'', theme:'citrus', size:'full',
+  className:'', classYear:'', theme:'edu', size:'full',
   showDesc:true, showAssign:false, showCut:true,
   tagline:null,           // header line 2; null = auto from year
   jdLabel:'Job Description',
@@ -471,7 +603,8 @@ let state = {
   custom:[],              // [{id,name,desc,icon}]
 };
 function load(){ let s=null; try{ s=JSON.parse(localStorage.getItem(STORAGE_KEY)); }catch(e){}
-  if(s) state={...state,...s}; else state.selected=[...STARTER_IDS]; }
+  if(s) state={...state,...s};
+  if(!THEMES.some(t=>t.id===state.theme)) state.theme='edu'; }
 function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ /* likely a huge uploaded image */ } }
 function allJobs(){
   const base = JOBS.map(j=>({...j, ...(state.overrides[j.id]||{})}));
@@ -520,6 +653,80 @@ function renderJobs(){
 }
 function esc(s){ return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
+/* ================= RENDER: ONE CARD (shared by preview and slideshow) ================= */
+function cardHTML(id, idx, total){
+  const j = getJob(id);
+  const cls = esc(state.className || 'Our Class');
+  const tagline = esc(state.tagline ?? (state.classYear ? 'JOBS ' + state.classYear : 'CLASS JOBS'));
+  return `
+        <div class="card t-${state.theme} ${state.showDesc?'':'no-desc'}" data-id="${id}">
+          <div class="deco a"></div><div class="deco b"></div><div class="deco c"></div>
+          <div class="toolbar">
+            <button data-act="pic" title="Change picture"><i data-lucide="image"></i></button>
+            <button data-act="up" title="Move earlier" ${idx===0?'disabled':''}><i data-lucide="arrow-up"></i></button>
+            <button data-act="down" title="Move later" ${idx===total-1?'disabled':''}><i data-lucide="arrow-down"></i></button>
+            <button data-act="remove" title="Remove from print"><i data-lucide="x"></i></button></div>
+          <div class="cls" contenteditable="true" data-field="className" spellcheck="false">${cls}</div>
+          <div class="year" contenteditable="true" data-field="tagline" spellcheck="false">${tagline}</div>
+          <div class="art" title="Click to change picture">${artHTML(j.icon)}</div>
+          <h2 class="title" contenteditable="true" data-field="name">${esc(j.name)}</h2>
+          <div class="jd" contenteditable="true" data-field="jdLabel" spellcheck="false">${esc(state.jdLabel)}</div>
+          <p class="desc" contenteditable="true" data-field="desc">${esc(j.desc)}</p>
+          ${state.showAssign?`<div class="assign">Assigned to <span></span></div>`:''}
+        </div>`;
+}
+
+/* ================= RENDER: WELCOME ================= */
+function renderWelcome(){
+  if(!document.body.classList.contains('welcome')) return;
+  const q = ($('#wSearch').value||'').toLowerCase();
+  const jobs = allJobs().filter(j=>!q || (j.name+' '+j.desc).toLowerCase().includes(q));
+  const groups = [
+    ['Your custom jobs', jobs.filter(j=>j.custom)],
+    ['The classics', jobs.filter(j=>j.featured)],
+    ['More ideas', jobs.filter(j=>!j.featured && !j.custom)],
+  ].filter(g=>g[1].length);
+  $('#wGrid').innerHTML = groups.map(([title,list])=>`
+    <div class="job-group-title">${title}</div>
+    <div class="tiles">${list.map(j=>`
+      <button type="button" class="tile ${state.selected.includes(j.id)?'on':''}" data-id="${j.id}">
+        <div class="ico">${iconHTML(j.icon)}</div>
+        <div><div class="name">${esc(j.name)}</div><div class="desc">${esc(j.desc)}</div></div>
+        <span class="tick"><i data-lucide="check"></i></span>
+      </button>`).join('')}</div>`).join('') || '<p class="tip">No jobs match that search.</p>';
+  lucide.createIcons();
+  const n = state.selected.length;
+  $('#wCount').textContent = n ? `${n} job${n===1?'':'s'} picked` : 'Pick at least one job to continue';
+  $('#wGo').disabled = !n;
+}
+function showWelcome(){ state.started=false; save(); document.body.classList.add('welcome'); $('#wSearch').value=''; renderWelcome(); window.scrollTo(0,0); }
+function startApp(){ state.started=true; save(); document.body.classList.remove('welcome'); renderJobs(); renderPreview(); applyZoom(); }
+function toggle(id,on){
+  state.selected = state.selected.filter(x=>x!==id);
+  if(on) state.selected.push(id);
+  save(); renderJobs(); renderPreview(); renderWelcome();
+}
+
+/* ================= SLIDESHOW ================= */
+let ssIndex = 0;
+function ssIds(){ return state.selected.filter(id=>getJob(id)); }
+function openShow(){
+  const ids = ssIds(); if(!ids.length) return alert('Pick at least one job first.');
+  ssIndex = Math.min(ssIndex, ids.length-1);
+  $('#show').classList.add('open'); renderShow();
+}
+function closeShow(){ $('#show').classList.remove('open'); if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); }
+function renderShow(){
+  const ids = ssIds(); if(!ids.length) return closeShow();
+  const id = ids[ssIndex];
+  const s = Math.min((window.innerWidth-48)/(11*96), (window.innerHeight-110)/(8.5*96));
+  const st = $('#ssStage'); st.style.setProperty('--ss', s);
+  st.innerHTML = `<div class="sheet size-full"><div class="grid">${cardHTML(id, ssIndex, ids.length)}</div></div>`;
+  $('#ssCount').textContent = `${ssIndex+1} / ${ids.length}`;
+  lucide.createIcons();
+}
+function ssStep(d){ const n = ssIds().length; if(!n) return; ssIndex = (ssIndex + d + n) % n; renderShow(); }
+
 /* ================= RENDER: PREVIEW ================= */
 function renderPreview(){
   const pv = $('#preview');
@@ -531,28 +738,10 @@ function renderPreview(){
   const per = {full:1, half:2, quarter:4}[state.size];
   const pages = [];
   for(let i=0;i<ids.length;i+=per) pages.push(ids.slice(i,i+per));
-  const cls = esc(state.className || 'Our Class');
-  const tagline = esc(state.tagline ?? (state.classYear ? 'JOBS ' + state.classYear : 'CLASS JOBS'));
-  const decos = `<div class="deco a"></div><div class="deco b"></div><div class="deco c"></div>`;
-  const tb = (id,i)=>`<div class="toolbar">
-      <button data-act="pic" title="Change picture"><i data-lucide="image"></i></button>
-      <button data-act="up" title="Move earlier" ${i===0?'disabled':''}><i data-lucide="arrow-up"></i></button>
-      <button data-act="down" title="Move later" ${i===ids.length-1?'disabled':''}><i data-lucide="arrow-down"></i></button>
-      <button data-act="remove" title="Remove from print"><i data-lucide="x"></i></button></div>`;
   let i=0;
   pv.innerHTML = `<p class="edit-hint">Click any words on a card to change them. Click a picture to swap it.</p>` + pages.map(p=>`
     <div class="sheet-wrap"><div class="sheet size-${state.size}">
-      <div class="grid">${p.map(id=>{ const j=getJob(id); const idx=i++; return `
-        <div class="card t-${state.theme} ${state.showDesc?'':'no-desc'}" data-id="${id}">
-          ${decos}${tb(id,idx)}
-          <div class="cls" contenteditable="true" data-field="className" spellcheck="false">${cls}</div>
-          <div class="year" contenteditable="true" data-field="tagline" spellcheck="false">${tagline}</div>
-          <div class="art" title="Click to change picture">${artHTML(j.icon)}</div>
-          <h2 class="title" contenteditable="true" data-field="name">${esc(j.name)}</h2>
-          <div class="jd" contenteditable="true" data-field="jdLabel" spellcheck="false">${esc(state.jdLabel)}</div>
-          <p class="desc" contenteditable="true" data-field="desc">${esc(j.desc)}</p>
-          ${state.showAssign?`<div class="assign">Assigned to <span></span></div>`:''}
-        </div>`;}).join('')}
+      <div class="grid">${p.map(id=>cardHTML(id, i++, ids.length)).join('')}
         ${Array(per-p.length).fill('<div></div>').join('')}
       </div>
       ${state.showCut && per>=2 ? '<hr class="cutline" style="top:50%">' : ''}
@@ -620,7 +809,33 @@ document.addEventListener('DOMContentLoaded', ()=>{
   load();
   $('#className').value = state.className; $('#classYear').value = state.classYear;
   $('#showDesc').checked = state.showDesc; $('#showAssign').checked = state.showAssign; $('#showCut').checked = state.showCut;
-  renderSwatches(); syncSize(); renderJobs(); renderPreview(); applyZoom();
+  document.body.classList.toggle('welcome', !state.started);
+  renderSwatches(); syncSize(); renderJobs(); renderPreview(); applyZoom(); renderWelcome();
+  // welcome screen
+  $('#wGrid').addEventListener('click', e=>{ const t=e.target.closest('.tile'); if(!t) return; toggle(t.dataset.id, !state.selected.includes(t.dataset.id)); });
+  $('#wSearch').addEventListener('input', renderWelcome);
+  $('#wClassics').onclick = ()=>{ state.selected=[...new Set([...state.selected, ...FEATURED_IDS])]; save(); renderJobs(); renderPreview(); renderWelcome(); };
+  $('#wClear').onclick = ()=>{ state.selected=[]; save(); renderJobs(); renderPreview(); renderWelcome(); };
+  $('#wGo').onclick = ()=>{ if(state.selected.length) startApp(); };
+  $('#backToWelcome').onclick = showWelcome;
+  // export + slideshow
+  $('#exportBtn').onclick = ()=>{ if(!state.selected.length) return alert('Pick at least one job first.'); $('#exportModal').classList.add('open'); };
+  $('#exportPdf').onclick = ()=>{ $('#exportModal').classList.remove('open'); setTimeout(()=>window.print(), 150); };
+  $('#exportShow').onclick = ()=>{ $('#exportModal').classList.remove('open'); openShow(); };
+  $('#ssPrev').onclick = ()=>ssStep(-1);
+  $('#ssNext').onclick = ()=>ssStep(1);
+  $('#ssExit').onclick = closeShow;
+  $('#ssFull').onclick = ()=>{ const el=$('#show'); if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); else if(el.requestFullscreen) el.requestFullscreen().catch(()=>{}); };
+  document.addEventListener('keydown', e=>{
+    if(!$('#show').classList.contains('open')) return;
+    if(e.key==='ArrowRight' || e.key==='ArrowDown' || e.key===' ' || e.key==='PageDown'){ e.preventDefault(); ssStep(1); }
+    else if(e.key==='ArrowLeft' || e.key==='ArrowUp' || e.key==='PageUp'){ e.preventDefault(); ssStep(-1); }
+    else if(e.key==='Escape'){ closeShow(); }
+    else if(e.key==='Home'){ ssIndex=0; renderShow(); }
+    else if(e.key==='End'){ ssIndex=ssIds().length-1; renderShow(); }
+  });
+  window.addEventListener('resize', ()=>{ if($('#show').classList.contains('open')) renderShow(); });
+  if(location.hash==='#slideshow' && state.selected.length){ state.started=true; document.body.classList.remove('welcome'); openShow(); }
   $('#zoomIn').onclick = ()=>stepZoom(1);
   $('#zoomOut').onclick = ()=>stepZoom(-1);
   $('#zoomFit').onclick = ()=>setZoom('fit');
@@ -641,20 +856,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
     // clicking the row toggles it too
     toggle(id, !state.selected.includes(id));
   });
-  function toggle(id,on){
-    state.selected = state.selected.filter(x=>x!==id);
-    if(on) state.selected.push(id);
-    save(); renderJobs(); renderPreview();
-  }
-  $('#selectFeatured').onclick = ()=>{ state.selected = [...new Set([...state.selected, ...FEATURED_IDS])]; save(); renderJobs(); renderPreview(); };
-  $('#clearAll').onclick = ()=>{ state.selected=[]; save(); renderJobs(); renderPreview(); };
+  $('#selectFeatured').onclick = ()=>{ state.selected = [...new Set([...state.selected, ...FEATURED_IDS])]; save(); renderJobs(); renderPreview(); renderWelcome(); };
+  $('#clearAll').onclick = ()=>{ state.selected=[]; save(); renderJobs(); renderPreview(); renderWelcome(); };
   $('#resetAll').onclick = ()=>{ if(confirm('Reset everything? This clears your picks, edits, custom jobs and uploaded pictures.')){ localStorage.removeItem(STORAGE_KEY); location.reload(); } };
   $('#addCustom').onclick = ()=>{
     const id = 'custom-'+Date.now();
     state.custom.push({id, name:'My Custom Job', desc:'Type what this job does here.', icon:{type:'lucide',value:'star'}});
     state.selected.push(id); save(); renderJobs(); renderPreview(); openEdit(id);
   };
-  $('#printBtn').onclick = ()=>{ if(!state.selected.length) return alert('Pick at least one job first.'); window.print(); };
 
   // ----- edit in place on the preview -----
   const pv = $('#preview');
