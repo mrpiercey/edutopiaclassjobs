@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class Jobs Maker</title>
+<meta name="description" content="Create beautiful, printable class job cards. Pick a layout, choose your jobs, add icons, and print.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;900&family=Baloo+2:wght@500;700;800&family=Lora:ital,wght@0,500;0,700;1,500&family=Patrick+Hand&family=Caveat:wght@600;700&family=Poppins:wght@400;600;700&family=Bebas+Neue&family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="lucide.min.js"></script>
+<style>
+/* ============ APP SHELL ============ */
+*{box-sizing:border-box}
+:root{
+  --ui-bg:#f4f5f7; --ui-panel:#ffffff; --ui-border:#e3e6ea; --ui-text:#1f2937; --ui-muted:#6b7280;
+  --ui-accent:#4f46e5; --ui-accent-soft:#eef2ff;
+}
+html,body{margin:0;height:100%}
+body{font-family:'Nunito',system-ui,sans-serif;background:var(--ui-bg);color:var(--ui-text);display:flex;height:100vh;overflow:hidden}
+button{font-family:inherit;cursor:pointer}
+input,textarea,select{font-family:inherit;font-size:14px}
+
+#sidebar{width:400px;min-width:400px;background:var(--ui-panel);border-right:1px solid var(--ui-border);display:flex;flex-direction:column;height:100vh}
+#sidebar header{padding:16px 18px 12px;border-bottom:1px solid var(--ui-border)}
+#sidebar header h1{margin:0;font-size:20px;font-weight:900;display:flex;align-items:center;gap:8px}
+#sidebar header p{margin:4px 0 0;font-size:12px;color:var(--ui-muted)}
+#panels{flex:1;overflow-y:auto;padding:0 18px 100px}
+section.panel{padding:16px 0;border-bottom:1px solid var(--ui-border)}
+section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ui-muted);margin:0 0 10px;font-weight:900}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:12px;font-weight:700;margin-bottom:4px}
+.field input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--ui-border);border-radius:8px}
+.row{display:flex;gap:8px}
+.row .field{flex:1}
+
+/* layout swatches */
+.swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.swatch{border:2px solid var(--ui-border);border-radius:10px;padding:0;overflow:hidden;background:#fff;text-align:left;transition:.15s}
+.swatch:hover{transform:translateY(-1px)}
+.swatch.active{border-color:var(--ui-accent);box-shadow:0 0 0 3px var(--ui-accent-soft)}
+.swatch .sw-prev{height:46px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px}
+.swatch .sw-name{font-size:10px;padding:4px 6px;font-weight:700;color:var(--ui-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.seg{display:flex;border:1px solid var(--ui-border);border-radius:8px;overflow:hidden}
+.seg button{flex:1;border:0;background:#fff;padding:8px 4px;font-size:12px;font-weight:700;color:var(--ui-muted)}
+.seg button.active{background:var(--ui-accent);color:#fff}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;margin:6px 0;cursor:pointer}
+.check input{width:16px;height:16px}
+
+/* jobs list */
+.jobs-tools{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.jobs-tools input{flex:1;min-width:120px;padding:7px 10px;border:1px solid var(--ui-border);border-radius:8px}
+.btn{border:1px solid var(--ui-border);background:#fff;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:700;color:var(--ui-text)}
+.btn:hover{background:#f6f7f9}
+.btn.primary{background:var(--ui-accent);border-color:var(--ui-accent);color:#fff}
+.btn.primary:hover{background:#4338ca}
+.btn.small{padding:4px 8px;font-size:11px}
+.job-group-title{font-size:11px;font-weight:900;color:var(--ui-muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px}
+.job{display:grid;grid-template-columns:22px 40px 1fr auto;gap:8px;align-items:center;padding:6px 6px;border-radius:8px;border:1px solid transparent}
+.job:hover{background:#f8f9fb}
+.job.selected{border-color:var(--ui-accent-soft);background:var(--ui-accent-soft)}
+.job input[type=checkbox]{width:16px;height:16px}
+.job .ico{width:40px;height:40px;border-radius:8px;background:#fff;border:1px solid var(--ui-border);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
+.job .ico:hover{border-color:var(--ui-accent)}
+.job .ico svg{width:24px;height:24px}
+.job .ico img{width:100%;height:100%;object-fit:contain}
+.job .ico .emoji{font-size:24px;line-height:1}
+.job .name{font-weight:800;font-size:13px}
+.job .desc{font-size:11px;color:var(--ui-muted);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.job .actions{display:flex;gap:2px}
+.job .actions button{border:0;background:transparent;color:var(--ui-muted);padding:4px;border-radius:6px}
+.job .actions button:hover{background:#eceef2;color:var(--ui-text)}
+.job .actions svg{width:15px;height:15px}
+
+#sidebar footer{position:absolute;bottom:0;left:0;width:400px;padding:12px 18px;background:#fff;border-top:1px solid var(--ui-border);display:flex;gap:8px;align-items:center}
+#sidebar footer .btn.primary{flex:1;padding:11px;font-size:14px}
+#count{font-size:12px;color:var(--ui-muted)}
+
+/* preview area */
+#preview{flex:1;overflow:auto;padding:28px;display:flex;flex-direction:column;align-items:center;gap:24px}
+#preview .hint{color:var(--ui-muted);font-size:14px;text-align:center;max-width:420px;line-height:1.5;margin-top:60px}
+.sheet{width:8.5in;height:11in;background:#fff;box-shadow:0 6px 30px rgba(0,0,0,.14);position:relative;overflow:hidden;flex-shrink:0}
+.sheet.landscape{width:11in;height:8.5in}
+.sheet .grid{display:grid;width:100%;height:100%}
+.sheet.size-full .grid{grid-template-columns:1fr;grid-template-rows:1fr}
+.sheet.size-half .grid{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
+.sheet.size-quarter .grid{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.cutline{position:absolute;border:0;border-top:1px dashed #b7bcc4;left:0;right:0;pointer-events:none}
+.cutline.v{border-top:0;border-left:1px dashed #b7bcc4;top:0;bottom:0;left:50%}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:50}
+.modal-bg.open{display:flex}
+.modal{background:#fff;width:720px;max-width:95vw;max-height:88vh;border-radius:16px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal .mhead{padding:14px 18px;border-bottom:1px solid var(--ui-border);display:flex;align-items:center;gap:12px}
+.modal .mhead h3{margin:0;font-size:16px;flex:1}
+.modal .tabs{display:flex;gap:4px;padding:10px 18px 0}
+.modal .tabs button{border:0;background:transparent;padding:8px 12px;font-weight:800;font-size:13px;color:var(--ui-muted);border-bottom:2px solid transparent}
+.modal .tabs button.active{color:var(--ui-accent);border-color:var(--ui-accent)}
+.modal .mbody{padding:14px 18px;overflow:auto;flex:1}
+.modal .search{width:100%;padding:9px 12px;border:1px solid var(--ui-border);border-radius:8px;margin-bottom:12px}
+.icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}
+.icon-grid button{border:1px solid var(--ui-border);background:#fff;border-radius:10px;height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;color:var(--ui-muted);overflow:hidden;padding:4px}
+.icon-grid button:hover{border-color:var(--ui-accent);background:var(--ui-accent-soft)}
+.icon-grid button svg{width:26px;height:26px;color:var(--ui-text)}
+.icon-grid button .emoji{font-size:30px;line-height:1}
+.upload-box{border:2px dashed var(--ui-border);border-radius:14px;padding:36px;text-align:center;color:var(--ui-muted)}
+.upload-box input{display:none}
+.tip{font-size:12px;color:var(--ui-muted);line-height:1.5;margin-top:10px}
+.tip a{color:var(--ui-accent)}
+
+/* edit modal */
+.modal .field textarea{width:100%;min-height:90px;padding:8px 10px;border:1px solid var(--ui-border);border-radius:8px;resize:vertical}
+.modal .mfoot{padding:12px 18px;border-top:1px solid var(--ui-border);display:flex;justify-content:flex-end;gap:8px}
+
+/* ============ CARD DESIGN (shared) ============ */
+.card{width:100%;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:0.45in 0.5in;background:var(--c-bg);color:var(--c-text);font-family:var(--c-body);
+  -webkit-print-color-adjust:exact;print-color-adjust:exact}
+.card .cls{font-family:var(--c-head);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.85em;color:var(--c-accent);opacity:.95;position:relative}
+.card .year{font-size:.7em;letter-spacing:.2em;opacity:.7;margin-top:2px;position:relative}
+.card .art{flex:0 0 auto;display:flex;align-items:center;justify-content:center;position:relative;margin:auto 0 .2in}
+.card .art .chip{border-radius:50%;background:var(--c-chip);display:flex;align-items:center;justify-content:center;color:var(--c-accent)}
+.card .art svg{width:60%;height:60%;stroke-width:1.6}
+.card .art img{width:100%;height:100%;object-fit:contain}
+.card .art .emoji{line-height:1}
+.card .title{font-family:var(--c-head);font-weight:800;line-height:1.05;position:relative;margin:0 0 .12in;color:var(--c-title);text-wrap:balance}
+.card .jd{font-size:.62em;letter-spacing:.25em;text-transform:uppercase;font-weight:700;color:var(--c-accent);position:relative;margin-bottom:.1in}
+.card .desc{line-height:1.45;position:relative;max-width:90%;margin:0 auto auto}
+.card .assign{margin-top:auto;padding-top:.15in;font-size:.8em;opacity:.85;position:relative;width:80%}
+.card .assign span{display:block;border-bottom:1.5px solid var(--c-accent);height:1.3em;margin-top:.05in}
+.card .deco{position:absolute;pointer-events:none}
+
+/* size scaling: full sheet base, half & quarter scale down */
+.size-full .card{font-size:22px}
+.size-full .card .art .chip{width:3.4in;height:3.4in}
+.size-full .card .art .emoji{font-size:2.2in}
+.size-full .card .art img{width:3.4in;height:3.4in}
+.size-full .card .title{font-size:2.6em}
+.size-half .card{font-size:15px;padding:.3in .45in}
+.size-half .card .art .chip{width:2.0in;height:2.0in}
+.size-half .card .art .emoji{font-size:1.3in}
+.size-half .card .art img{width:2.0in;height:2.0in}
+.size-half .card .title{font-size:2.1em}
+.size-quarter .card{font-size:11px;padding:.25in .3in}
+.size-quarter .card .art .chip{width:1.4in;height:1.4in}
+.size-quarter .card .art .emoji{font-size:.95in}
+.size-quarter .card .art img{width:1.4in;height:1.4in}
+.size-quarter .card .title{font-size:1.9em}
+.size-quarter .card .desc{max-width:100%}
+.card.no-desc .desc,.card.no-desc .jd{display:none}
+
+/* ============ THEMES ============ */
+/* 1 Sunny Citrus */
+.t-citrus{--c-bg:#fff8e7;--c-text:#3b2f1c;--c-title:#e2591a;--c-accent:#f2a900;--c-chip:#ffe9a8;--c-head:'Fredoka',sans-serif;--c-body:'Nunito',sans-serif}
+.card.t-citrus{padding-top:.75in}
+.t-citrus .deco.a{width:200%;height:14%;background:#ffd166;top:-8%;left:-50%;transform:rotate(-3deg);border-radius:50%}
+.t-citrus .deco.b{width:70%;height:12%;background:#ffb703;bottom:-6%;right:-10%;border-radius:50%;opacity:.5}
+/* 2 Ocean Breeze */
+.t-ocean{--c-bg:#eef8fb;--c-text:#123c4d;--c-title:#0b6e8f;--c-accent:#22a6c3;--c-chip:#ffffff;--c-head:'Quicksand',sans-serif;--c-body:'Nunito',sans-serif}
+.t-ocean .deco.a{inset:.18in;border:3px solid #22a6c3;border-radius:.35in}
+.t-ocean .deco.b{width:100%;height:16%;bottom:0;left:0;background:radial-gradient(circle at 50% 120%,#bde8f2 0,#bde8f2 60%,transparent 61%);opacity:.9}
+/* 3 Forest Notebook */
+.t-forest{--c-bg:#f3f6ee;--c-text:#233521;--c-title:#2f5d3a;--c-accent:#6a994e;--c-chip:#e0eccf;--c-head:'Lora',serif;--c-body:'Nunito',sans-serif}
+.t-forest .deco.a{inset:.14in;border:2px solid #6a994e;border-radius:.1in}
+.t-forest .deco.b{inset:.22in;border:1px solid #6a994e;border-radius:.06in;opacity:.7}
+/* 4 Berry Pop */
+.t-berry{--c-bg:#ffffff;--c-text:#3a1f36;--c-title:#a4133c;--c-accent:#ff4d6d;--c-chip:#ffe3ea;--c-head:'Baloo 2',sans-serif;--c-body:'Nunito',sans-serif}
+.t-berry .deco.a{width:100%;height:.35in;top:0;left:0;background:repeating-linear-gradient(90deg,#ff4d6d 0 .5in,#ffb3c1 .5in 1in)}
+.t-berry .deco.b{width:100%;height:.35in;bottom:0;left:0;background:repeating-linear-gradient(90deg,#ffb3c1 0 .5in,#ff4d6d .5in 1in)}
+/* 5 Chalkboard */
+.t-chalk{--c-bg:#2f4f3f;--c-text:#f4f1de;--c-title:#ffffff;--c-accent:#f2cc8f;--c-chip:#3f6a54;--c-head:'Patrick Hand',cursive;--c-body:'Patrick Hand',cursive}
+.t-chalk .deco.a{inset:.2in;border:3px dashed #f4f1de;border-radius:.2in;opacity:.7}
+.t-chalk .deco.b{width:3in;height:.6in;bottom:.35in;right:.4in;border-bottom:2px solid #f2cc8f;opacity:.5;transform:rotate(-2deg)}
+/* 6 Pastel Sky */
+.t-pastel{--c-bg:#fdf6ff;--c-text:#4a3d55;--c-title:#7b5ea7;--c-accent:#c3a6e0;--c-chip:#ffffff;--c-head:'Fredoka',sans-serif;--c-body:'Quicksand',sans-serif}
+.t-pastel .deco.a{width:2.6in;height:2.6in;border-radius:50%;background:#dfe9ff;top:-1in;left:-1in}
+.t-pastel .deco.b{width:3in;height:3in;border-radius:50%;background:#ffe6f0;bottom:-1.3in;right:-1.2in}
+.t-pastel .deco.c{width:1.4in;height:1.4in;border-radius:50%;background:#e5ffe9;bottom:.6in;left:-.5in}
+/* 7 Retro Diner */
+.t-retro{--c-bg:#fdf0d5;--c-text:#3d1e1e;--c-title:#c1121f;--c-accent:#003049;--c-chip:#ffffff;--c-head:'Bebas Neue',sans-serif;--c-body:'Nunito',sans-serif}
+.card.t-retro .title{letter-spacing:.04em;font-weight:400}
+.t-retro .deco.a{inset:.15in;border:4px double #003049;border-radius:.05in}
+.t-retro .deco.b{width:100%;height:.25in;left:0;bottom:.15in;background:repeating-linear-gradient(90deg,#003049 0 .25in,transparent .25in .5in);opacity:.15}
+/* 8 Kraft Paper */
+.t-kraft{--c-bg:#e9dcc4;--c-text:#3e2f22;--c-title:#5c3d2e;--c-accent:#b56a45;--c-chip:#f7efe1;--c-head:'Caveat',cursive;--c-body:'Lora',serif}
+.card.t-kraft .title{font-size:3.1em;font-weight:700}
+.t-kraft .deco.a{inset:.25in;border:2px solid #5c3d2e;border-radius:2px;opacity:.5}
+.t-kraft .deco.b{width:1.6in;height:.45in;background:#f5c6b0;top:.05in;left:50%;transform:translateX(-50%) rotate(-2deg);opacity:.85}
+/* 9 Clean Mono */
+.t-mono{--c-bg:#ffffff;--c-text:#1a1a1a;--c-title:#111111;--c-accent:#111111;--c-chip:#f0f0f0;--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.t-mono .deco.a{inset:.2in;border:2px solid #111}
+.card.t-mono .jd{border-top:1px solid #111;border-bottom:1px solid #111;padding:.06in 0;display:inline-block}
+/* 10 Confetti */
+.t-confetti{--c-bg:#ffffff;--c-text:#2b2d42;--c-title:#2b2d42;--c-accent:#ef476f;--c-chip:#fff3b0;--c-head:'Baloo 2',sans-serif;--c-body:'Nunito',sans-serif}
+.t-confetti .deco.a{inset:0;background-image:
+  radial-gradient(circle,#ef476f 3px,transparent 4px),radial-gradient(circle,#ffd166 3px,transparent 4px),
+  radial-gradient(circle,#06d6a0 3px,transparent 4px),radial-gradient(circle,#118ab2 3px,transparent 4px);
+  background-size:1.3in 1.3in,1.1in 1.1in,1.6in 1.6in,0.9in 0.9in;background-position:0 0,.4in .6in,.8in .2in,.2in .9in;opacity:.35}
+.t-confetti .deco.b{inset:.2in;border:3px solid #ffd166;border-radius:.3in;background:rgba(255,255,255,.85)}
+/* 11 Rainbow Stripe */
+.t-rainbow{--c-bg:#ffffff;--c-text:#2d3142;--c-title:#2d3142;--c-accent:#5e60ce;--c-chip:#eef0ff;--c-head:'Fredoka',sans-serif;--c-body:'Nunito',sans-serif}
+.t-rainbow .deco.a{left:0;top:0;bottom:0;width:.3in;background:linear-gradient(180deg,#ff595e,#ffca3a,#8ac926,#1982c4,#6a4c93)}
+.card.t-rainbow{padding-left:.7in}
+/* 12 Night Sky */
+.t-night{--c-bg:#1b1f3b;--c-text:#e8e9f3;--c-title:#ffffff;--c-accent:#ffd166;--c-chip:#2c3160;--c-head:'Poppins',sans-serif;--c-body:'Nunito',sans-serif}
+.t-night .deco.a{inset:0;background-image:radial-gradient(circle,#fff 1px,transparent 2px),radial-gradient(circle,#fff .8px,transparent 1.6px);background-size:1.2in 1.2in,.7in .7in;background-position:.3in .5in,.9in .1in;opacity:.7}
+.t-night .deco.b{width:1.2in;height:1.2in;border-radius:50%;top:.4in;right:.5in;box-shadow:.25in -.1in 0 0 #ffd166;opacity:.9}
+
+@media (max-width:900px){
+  body{flex-direction:column;height:auto;overflow:auto}
+  #sidebar{width:100%;min-width:0;height:auto;border-right:0;border-bottom:1px solid var(--ui-border)}
+  #sidebar footer{position:sticky;bottom:0;width:100%}
+  #panels{padding-bottom:16px}
+  #preview{padding:16px;overflow:visible}
+  .sheet{transform:scale(.45);transform-origin:top center;margin-bottom:calc(-11in * .55)}
+}
+/* ============ EDIT-IN-PLACE (screen only) ============ */
+.card [contenteditable]{cursor:text;border-radius:4px;outline:2px dashed transparent;outline-offset:3px;transition:outline-color .15s}
+.card [contenteditable]:hover{outline-color:rgba(0,0,0,.25)}
+.card [contenteditable]:focus{outline-color:#4f46e5;outline-style:solid;background:rgba(255,255,255,.35)}
+.card .art{cursor:pointer;border-radius:50%}
+.card .art:hover{outline:2px dashed rgba(0,0,0,.3);outline-offset:6px}
+.card .toolbar{position:absolute;top:8px;right:8px;display:flex;gap:4px;opacity:0;transition:.15s;z-index:5}
+.card:hover .toolbar{opacity:1}
+.card .toolbar button{border:0;background:rgba(255,255,255,.95);color:#374151;border-radius:6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer}
+.card .toolbar button:hover{background:#4f46e5;color:#fff}
+.card .toolbar svg{width:15px;height:15px}
+.edit-hint{font-size:12px;color:var(--ui-muted);text-align:center;margin:0}
+
+/* ============ PRINT ============ */
+@page{size:letter portrait;margin:0}
+@media print{
+  html,body{height:auto;overflow:visible;background:#fff;display:block}
+  #sidebar,.modal-bg,#preview .hint,.card .toolbar,.edit-hint{display:none !important}
+  .card [contenteditable],.card .art{outline:none !important;background:transparent !important}
+  #preview{padding:0;display:block;overflow:visible}
+  .sheet{box-shadow:none;margin:0;page-break-after:always;break-after:page;width:8.5in;height:11in}
+  .sheet:last-child{page-break-after:auto;break-after:auto}
+}
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <header>
+    <h1><i data-lucide="briefcase"></i> Class Jobs Maker</h1>
+    <p>Pick a look, check your jobs, print. Your work saves automatically in this browser.</p>
+  </header>
+
+  <div id="panels">
+    <section class="panel">
+      <h2>1. Your class</h2>
+      <div class="row">
+        <div class="field"><label>Class name</label><input type="text" id="className" placeholder="Mr. Piercey's Class"></div>
+        <div class="field" style="flex:0 0 110px"><label>Year</label><input type="text" id="classYear" placeholder="2026-27"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>2. Choose a look</h2>
+      <div class="swatches" id="swatches"></div>
+    </section>
+
+    <section class="panel">
+      <h2>3. Print size</h2>
+      <div class="seg" id="sizeSeg">
+        <button data-size="full">Full sheet<br><small>1 per page</small></button>
+        <button data-size="half">Half sheet<br><small>2 per page</small></button>
+        <button data-size="quarter">Quarter<br><small>4 per page</small></button>
+      </div>
+      <label class="check" style="margin-top:10px"><input type="checkbox" id="showDesc" checked> Show job descriptions</label>
+      <label class="check"><input type="checkbox" id="showAssign"> Add an "Assigned to" line</label>
+      <label class="check"><input type="checkbox" id="showCut" checked> Show cut lines on screen (they don't print)</label>
+    </section>
+
+    <section class="panel">
+      <h2>4. Pick your jobs</h2>
+      <div class="jobs-tools">
+        <input type="text" id="jobSearch" placeholder="Search jobs...">
+        <button class="btn" id="addCustom">+ Custom job</button>
+      </div>
+      <div class="jobs-tools">
+        <button class="btn small" id="selectFeatured">Select the classics</button>
+        <button class="btn small" id="clearAll">Clear all</button>
+        <button class="btn small" id="resetAll">Reset everything</button>
+      </div>
+      <p class="tip" style="margin:0 0 6px">Click any icon to change it. Click the pencil to edit a job's name or description.</p>
+      <div id="jobList"></div>
+    </section>
+  </div>
+
+  <footer>
+    <span id="count">0 jobs</span>
+    <button class="btn primary" id="printBtn"><i data-lucide="printer" style="width:16px;height:16px;vertical-align:-3px"></i> Print / Save as PDF</button>
+  </footer>
+</aside>
+
+<main id="preview"></main>
+
+<!-- Icon picker -->
+<div class="modal-bg" id="iconModal">
+  <div class="modal">
+    <div class="mhead"><h3>Choose a picture</h3><button class="btn" data-close>Close</button></div>
+    <div class="tabs">
+      <button class="active" data-tab="icons">Icons</button>
+      <button data-tab="emoji">Emoji</button>
+      <button data-tab="upload">Upload your own</button>
+    </div>
+    <div class="mbody">
+      <div data-pane="icons">
+        <input class="search" id="iconSearch" placeholder="Search icons (try: book, plant, music, robot)...">
+        <div class="icon-grid" id="iconGrid"></div>
+        <p class="tip">Icons from <a href="https://lucide.dev" target="_blank">Lucide</a> (free, open source).</p>
+      </div>
+      <div data-pane="emoji" style="display:none">
+        <input class="search" id="emojiSearch" placeholder="Search emoji (try: dog, star, pizza)...">
+        <div class="icon-grid" id="emojiGrid"></div>
+        <p class="tip">Emoji print using your computer's built-in emoji font, so they may look a little different on another computer.</p>
+      </div>
+      <div data-pane="upload" style="display:none">
+        <label class="upload-box">
+          <div><i data-lucide="image-plus" style="width:36px;height:36px"></i></div>
+          <strong>Click to choose an image</strong><br>PNG, JPG, GIF or SVG. Pictures with a see-through background look best.
+          <input type="file" id="uploadInput" accept="image/*">
+        </label>
+        <p class="tip">Need free pictures? Try <a href="https://openmoji.org" target="_blank">OpenMoji</a>, <a href="https://www.svgrepo.com" target="_blank">SVG Repo</a>, <a href="https://undraw.co/illustrations" target="_blank">unDraw</a>, <a href="https://www.flaticon.com" target="_blank">Flaticon</a>, or <a href="https://openclipart.org" target="_blank">Openclipart</a>. Uploaded pictures stay in your browser only.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit job modal -->
+<div class="modal-bg" id="editModal">
+  <div class="modal" style="width:480px">
+    <div class="mhead"><h3 id="editTitle">Edit job</h3><button class="btn" data-close>Close</button></div>
+    <div class="mbody">
+      <div class="field"><label>Job title</label><input type="text" id="editName"></div>
+      <div class="field"><label>Job description</label><textarea id="editDesc"></textarea></div>
+    </div>
+    <div class="mfoot"><button class="btn" id="editDelete" style="margin-right:auto;color:#b91c1c">Delete job</button><button class="btn primary" id="editSave">Save</button></div>
+  </div>
+</div>
+
+<script>
+/* ================= DATA ================= */
+const THEMES = [
+  {id:'citrus',  name:'Sunny Citrus',   bg:'#fff8e7', fg:'#e2591a'},
+  {id:'ocean',   name:'Ocean Breeze',   bg:'#eef8fb', fg:'#0b6e8f'},
+  {id:'forest',  name:'Forest Notebook',bg:'#f3f6ee', fg:'#2f5d3a'},
+  {id:'berry',   name:'Berry Pop',      bg:'#ffe3ea', fg:'#a4133c'},
+  {id:'chalk',   name:'Chalkboard',     bg:'#2f4f3f', fg:'#f4f1de'},
+  {id:'pastel',  name:'Pastel Sky',     bg:'#fdf6ff', fg:'#7b5ea7'},
+  {id:'retro',   name:'Retro Diner',    bg:'#fdf0d5', fg:'#c1121f'},
+  {id:'kraft',   name:'Kraft Paper',    bg:'#e9dcc4', fg:'#5c3d2e'},
+  {id:'mono',    name:'Clean & Simple', bg:'#ffffff', fg:'#111111'},
+  {id:'confetti',name:'Confetti',       bg:'#fff3b0', fg:'#ef476f'},
+  {id:'rainbow', name:'Rainbow Stripe', bg:'#eef0ff', fg:'#5e60ce'},
+  {id:'night',   name:'Night Sky',      bg:'#1b1f3b', fg:'#ffd166'},
+];
+
+// featured = the classics that show up first. 50 jobs total.
+const JOBS = [
+ ['botanist','Botanist','Keeps all of the plants in our classroom alive. Makes sure they are watered and getting plenty of sunlight.','sprout',1],
+ ['safety','Safety Manager','Makes sure the classroom door is shut anytime we leave and keeps an eye out for anything unsafe during the day.','shield-check',1],
+ ['equipment','Equipment Manager','Carries our recess equipment outside and back inside whenever we travel to and from recess.','dumbbell',1],
+ ['ornithologist','Ornithologist','Refills the classroom bird feeders when they get low. Records our bird watch data on the class chart every week.','bird',1],
+ ['custodian','Class Custodian','Helps with any spills that happen during the day. Brings the trash cans in and out and vacuums the rugs every Friday.','trash-2',1],
+ ['meteorologist','Meteorologist','Figures out the forecast each day and writes it on the board for the class to see.','cloud-sun',1],
+ ['cfo','Chief Financial Officer','Tells the class about purchases made in the class store. Deposits money into all student bank accounts at the end of every week.','piggy-bank',1],
+ ['curator','Curator','Finds and shares different pieces of art with the teacher. These will be displayed in the room for classmates to enjoy.','palette',1],
+ ['poet','Poet Laureate','Finds a meaningful poem of the week to share. It will be put on display for classmates to read.','feather',1],
+ ['jester','Class Jester','Comes up with a "Joke of the Week" that will be written on the board.','smile',1],
+ ['tech','Tech Support','Helps fix small tech problems in the classroom. Makes sure all of the Chromebooks are plugged in at the end of every day.','monitor',1],
+ ['journalist','Journalist','Writes an article for the class about the important events that happened during the past month.','newspaper',1],
+ ['librarian','Librarian','Helps classmates find books in the classroom library. Suggests books to anyone who needs a recommendation.','book-open',1],
+ ['assistant','Assistant to the Regional Manager','Passes out papers when needed and sorts paperwork into student mailboxes each morning. The teacher\'s first call when help is needed.','mail',1],
+ ['lineleader','Line Leader','Leads the class in a quiet, straight line whenever we travel through the school.','footprints',1],
+ ['caboose','Caboose','Walks at the very end of the line, turns off the lights, and makes sure no one gets left behind.','flag',1],
+ ['messenger','Messenger','Delivers notes, messages, and papers to the office and to other classrooms.','send',1],
+ ['board','Board Manager','Erases and cleans the whiteboard and keeps the markers ready to go.','pencil',1],
+ ['timekeeper','Timekeeper','Watches the clock and gives the class a heads-up before it is time to switch activities.','clock',1],
+ ['recycling','Recycling Ranger','Makes sure paper and plastic go in the recycling bin instead of the trash.','recycle',1],
+ ['pencils','Pencil Sharpener','Keeps a cup of sharpened pencils ready for any classmate who needs one.','pen-tool',0],
+ ['passer','Paper Passer','Hands out papers and supplies quickly and quietly.','file-text',0],
+ ['collector','Paper Collector','Collects finished work and stacks it neatly in the turn-in bin.','inbox',0],
+ ['attendance','Attendance Monitor','Counts who is here each morning and reports the number to the teacher.','clipboard-check',0],
+ ['calendar','Calendar Keeper','Updates the class calendar with today\'s date and any upcoming events.','calendar',0],
+ ['lights','Light Monitor','Turns the lights off when we leave the room and back on when we return.','lightbulb',0],
+ ['door','Door Holder','Holds the door open for the class as we come and go.','door-open',0],
+ ['lunch','Lunch Count Helper','Takes the lunch count each morning and turns it in to the office.','utensils',0],
+ ['snack','Snack Helper','Passes out snacks and helps everyone clean up afterward.','apple',0],
+ ['sanitizer','Sanitizer','Wipes down the desks and tables at the end of the day.','spray-can',0],
+ ['supplies','Supply Manager','Keeps the supply shelf organized and lets the teacher know when we are running low on something.','package',0],
+ ['materials','Materials Manager','Hands out and collects science and art materials during projects.','flask-conical',0],
+ ['pet','Pet Caretaker','Feeds and cares for our classroom pet and keeps its home clean.','paw-print',0],
+ ['dj','DJ','Picks the music for work time and transitions from our class-approved playlist.','music',0],
+ ['photographer','Photographer','Takes photos of class activities for our newsletter and bulletin boards.','camera',0],
+ ['historian','Historian','Keeps a record of the fun and important things that happen in our class this year.','scroll',0],
+ ['cartographer','Cartographer','Keeps our maps and globe ready to use and helps us find the places we are learning about.','map',0],
+ ['greeter','Greeter','Welcomes visitors and new students and helps them feel at home in our room.','hand',0],
+ ['subhelper','Substitute Helper','Helps a substitute teacher learn our routines and where everything is.','life-buoy',0],
+ ['kindness','Kindness Ambassador','Notices acts of kindness and adds them to our kindness wall.','heart',0],
+ ['birthday','Birthday Coordinator','Keeps track of birthdays and helps the class celebrate them.','cake',0],
+ ['encourager','Encourager','Cheers on classmates and reminds everyone to keep trying when things get tough.','megaphone',0],
+ ['chairs','Chair Stacker','Makes sure chairs are pushed in and stacked at the end of the day.','armchair',0],
+ ['backpack','Backpack Inspector','Reminds classmates to pack up folders, planners, and homework before dismissal.','backpack',0],
+ ['buddy','Reading Buddy','Reads with a classmate or a younger student during buddy time.','users',0],
+ ['mathhelper','Math Helper','Helps classmates who are stuck on a math problem after they have tried it on their own.','calculator',0],
+ ['wordwizard','Word Wizard','Adds a new vocabulary word to our word wall each week.','sparkles',0],
+ ['announcer','Announcer','Reads the morning announcements and class reminders out loud.','mic',0],
+ ['gardener','Gardener','Cares for our school garden or window garden.','flower',0],
+ ['energy','Energy Saver','Turns off screens, projectors, and lights when they are not being used.','zap',0],
+].map(j=>({id:j[0],name:j[1],desc:j[2],icon:{type:'lucide',value:j[3]},featured:!!j[4],custom:false}));
+
+// Curated Lucide icon names for the picker (all valid in lucide 0.460)
+const ICON_NAMES = `sprout leaf flower trees tree-pine shield-check shield dumbbell volleyball bird cat dog fish rabbit turtle squirrel paw-print bug snail
+trash-2 brush cloud-sun cloud-rain sun moon star snowflake umbrella rainbow thermometer wind piggy-bank coins banknote calculator palette paint-bucket brush
+feather smile laugh party-popper monitor laptop keyboard mouse cpu plug newspaper book-open book library scroll graduation-cap school mail send inbox
+footprints flag pencil pen-tool pencil-line eraser ruler scissors paperclip clipboard-check clipboard-list calendar clock alarm-clock timer hourglass
+lightbulb lamp door-open utensils apple cookie pizza sandwich coffee cup-soda ice-cream-cone cake candy spray-can recycle package box archive flask-conical
+microscope telescope atom rocket globe map map-pin compass camera video music headphones mic speaker radio disc-3 hand handshake heart heart-handshake
+life-buoy megaphone trophy medal crown gift armchair backpack briefcase users user-round users-round baby smile-plus sparkles wand-2 zap flame
+gamepad-2 puzzle dice-5 target bike car bus truck train-front plane sailboat anchor home building key lock bell printer phone tablet watch
+glasses shirt footprints hammer wrench drill construction pickaxe axe shovel tractor egg carrot leafy-green bone drumstick milk wheat
+file-text files folder mail-open message-circle message-square languages type quote award badge-check star-half thumbs-up
+bath droplet droplets waves mountain sunrise sunset cloud tent-tree caravan castle church landmark palmtree
+guitar piano drum trumpet music-2 film clapperboard image image-plus frame pen ruler-square-dashed spline
+dna pill-off stethoscope-off syringe-off heart-pulse activity brain eye ear
+shopping-cart shopping-bag store tag ticket receipt wallet credit-card
+bookmark list-checks list-todo check-check check-circle-2 circle-help info alert-triangle lightbulb-off`.split(/\s+/).filter(Boolean)
+ .filter(n=>!/-off$/.test(n) && !/syringe|pill|stethoscope/.test(n)); // keep it kid-friendly and skip anything odd
+
+const EMOJI = ('🌱 🌿 🌻 🌷 🌵 🍀 🌳 🍁 🐦 🐱 🐶 🐢 🐸 🐝 🦋 🐠 🦉 🐰 🦜 🐾 🧹 🗑️ ♻️ 🧽 🧼 ☀️ ⛅ 🌧️ ⛈️ 🌈 ❄️ 🌡️ 💰 🪙 💵 🏦 🧮 🎨 🖌️ 🖼️ ✏️ 📝 📖 📚 📰 📬 ✉️ 📣 🎤 🎧 🎵 🎶 🎸 🥁 🎹 📷 📸 🎬 💻 🖥️ ⌨️ 🖱️ 🔌 🔋 💡 🔦 🕯️ 🚪 🔑 🔒 🕐 ⏰ ⏳ 📅 🗓️ 📌 📎 ✂️ 📏 📐 🧪 🔬 🔭 🧲 🚀 🛰️ 🌍 🗺️ 🧭 🏳️ 🚩 🏆 🥇 🎖️ 🏅 👑 🎁 🎉 🎊 🎈 🎂 🍎 🍌 🍊 🍕 🥪 🍪 🥛 🍿 🥕 🧃 🍽️ 🍴 ⚽ 🏀 🏈 ⚾ 🎾 🏐 🥏 🛹 🚲 🛴 🏃 🚶 🧍 👫 👥 🙋 🤝 🙌 👏 👋 ✋ 🖐️ 💪 🧠 👀 👂 😀 😄 😂 🤣 😎 🤔 🤓 🧐 🥳 🤩 😴 🦸 🧙 🧑‍🚀 🧑‍🔬 🧑‍🏫 🧑‍🎨 🧑‍🍳 🧑‍🌾 🧑‍💻 🧑‍🚒 🕵️ 🧑‍⚕️ 🛠️ 🔧 🔨 🪛 🧰 🪜 🎒 👓 🧢 📦 🛒 🏷️ 🎟️ 🧩 🎲 🎮 🎯 🪁 🪀 🧸 🛎️ 📯 🔔 📻 📺 🚌 🚗 🚂 ✈️ ⛵ 🏠 🏫 🏰 ⛺ 🏕️ 🌋 🏔️ 🌊 🌙 ⭐ 🌟 ✨ ⚡ 🔥 💧 🌪️ 🪴 🐛 🐞 🦎 🐍 🦖 🦕 🐲 🦄 🐴 🐮 🐷 🐑 🐔 🦆 🦢 🦩 🐧 🦈 🐬 🐳 🦀 🦞 🐌 🕷️ 🦔 🦫 🦥 🦘 🐨 🐼 🐻 🦁 🐯 🦒 🐘 🦏 🦓 🐒 🦍 🐿️ 🦇 🐺 🦊 🦝 🦡 🐗 🐎').split(' ');
+
+const FEATURED_IDS = JOBS.filter(j=>j.featured).map(j=>j.id);
+// The five jobs that are already picked the first time someone opens the site
+const STARTER_IDS = ['lineleader','custodian','librarian','tech','messenger'];
+
+/* ================= STATE ================= */
+const STORAGE_KEY = 'classJobsMaker.v1';
+let state = {
+  className:'', classYear:'', theme:'citrus', size:'full',
+  showDesc:true, showAssign:false, showCut:true,
+  tagline:null,           // header line 2; null = auto from year
+  jdLabel:'Job Description',
+  selected:[],            // ordered ids
+  overrides:{},           // id -> {name,desc,icon}
+  custom:[],              // [{id,name,desc,icon}]
+};
+function load(){ let s=null; try{ s=JSON.parse(localStorage.getItem(STORAGE_KEY)); }catch(e){}
+  if(s) state={...state,...s}; else state.selected=[...STARTER_IDS]; }
+function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ /* likely a huge uploaded image */ } }
+function allJobs(){
+  const base = JOBS.map(j=>({...j, ...(state.overrides[j.id]||{})}));
+  return base.concat(state.custom.map(c=>({...c,custom:true,featured:false})));
+}
+function getJob(id){ return allJobs().find(j=>j.id===id); }
+function setJob(id, patch){
+  const c = state.custom.find(x=>x.id===id);
+  if(c){ Object.assign(c,patch); } else { state.overrides[id] = {...(state.overrides[id]||{}), ...patch}; }
+  save(); renderJobs(); renderPreview();
+}
+
+/* ================= RENDER: SIDEBAR ================= */
+const $ = s=>document.querySelector(s);
+function iconHTML(icon){
+  if(!icon) return '';
+  if(icon.type==='lucide') return `<i data-lucide="${icon.value}"></i>`;
+  if(icon.type==='emoji')  return `<span class="emoji">${icon.value}</span>`;
+  if(icon.type==='image')  return `<img src="${icon.value}" alt="">`;
+  return '';
+}
+function renderSwatches(){
+  $('#swatches').innerHTML = THEMES.map(t=>`
+    <button class="swatch ${state.theme===t.id?'active':''}" data-theme="${t.id}" title="${t.name}">
+      <div class="sw-prev" style="background:${t.bg};color:${t.fg}">Aa</div>
+      <div class="sw-name">${t.name}</div></button>`).join('');
+}
+function renderJobs(){
+  const q = ($('#jobSearch').value||'').toLowerCase();
+  const jobs = allJobs().filter(j=>!q || (j.name+' '+j.desc).toLowerCase().includes(q));
+  const groups = [
+    ['Your custom jobs', jobs.filter(j=>j.custom)],
+    ['The classics', jobs.filter(j=>j.featured)],
+    ['More ideas', jobs.filter(j=>!j.featured && !j.custom)],
+  ];
+  $('#jobList').innerHTML = groups.filter(g=>g[1].length).map(([title,list])=>`
+    <div class="job-group-title">${title}</div>` + list.map(j=>`
+    <div class="job ${state.selected.includes(j.id)?'selected':''}" data-id="${j.id}">
+      <input type="checkbox" ${state.selected.includes(j.id)?'checked':''} data-toggle>
+      <div class="ico" data-pick title="Change picture">${iconHTML(j.icon)}</div>
+      <div><div class="name">${esc(j.name)}</div><div class="desc">${esc(j.desc)}</div></div>
+      <div class="actions"><button data-edit title="Edit"><i data-lucide="pencil"></i></button></div>
+    </div>`).join('')).join('');
+  lucide.createIcons();
+  $('#count').textContent = `${state.selected.length} job${state.selected.length===1?'':'s'} selected`;
+}
+function esc(s){ return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ================= RENDER: PREVIEW ================= */
+function renderPreview(){
+  const pv = $('#preview');
+  const ids = state.selected.filter(id=>getJob(id));
+  if(!ids.length){
+    pv.innerHTML = `<p class="hint"><strong>Nothing to show yet.</strong><br>Check some jobs in the list on the left and your printable cards will appear here.</p>`;
+    return;
+  }
+  const per = {full:1, half:2, quarter:4}[state.size];
+  const pages = [];
+  for(let i=0;i<ids.length;i+=per) pages.push(ids.slice(i,i+per));
+  const cls = esc(state.className || 'Our Class');
+  const tagline = esc(state.tagline ?? (state.classYear ? 'JOBS ' + state.classYear : 'CLASS JOBS'));
+  const decos = `<div class="deco a"></div><div class="deco b"></div><div class="deco c"></div>`;
+  const tb = (id,i)=>`<div class="toolbar">
+      <button data-act="pic" title="Change picture"><i data-lucide="image"></i></button>
+      <button data-act="up" title="Move earlier" ${i===0?'disabled':''}><i data-lucide="arrow-up"></i></button>
+      <button data-act="down" title="Move later" ${i===ids.length-1?'disabled':''}><i data-lucide="arrow-down"></i></button>
+      <button data-act="remove" title="Remove from print"><i data-lucide="x"></i></button></div>`;
+  let i=0;
+  pv.innerHTML = `<p class="edit-hint">Click any words on a card to change them. Click a picture to swap it.</p>` + pages.map(p=>`
+    <div class="sheet size-${state.size}">
+      <div class="grid">${p.map(id=>{ const j=getJob(id); const idx=i++; return `
+        <div class="card t-${state.theme} ${state.showDesc?'':'no-desc'}" data-id="${id}">
+          ${decos}${tb(id,idx)}
+          <div class="cls" contenteditable="true" data-field="className" spellcheck="false">${cls}</div>
+          <div class="year" contenteditable="true" data-field="tagline" spellcheck="false">${tagline}</div>
+          <div class="art" title="Click to change picture">${artHTML(j.icon)}</div>
+          <h2 class="title" contenteditable="true" data-field="name">${esc(j.name)}</h2>
+          <div class="jd" contenteditable="true" data-field="jdLabel" spellcheck="false">${esc(state.jdLabel)}</div>
+          <p class="desc" contenteditable="true" data-field="desc">${esc(j.desc)}</p>
+          ${state.showAssign?`<div class="assign">Assigned to <span></span></div>`:''}
+        </div>`;}).join('')}
+        ${Array(per-p.length).fill('<div></div>').join('')}
+      </div>
+      ${state.showCut && per>=2 ? '<hr class="cutline" style="top:50%">' : ''}
+      ${state.showCut && per===4 ? '<hr class="cutline v">' : ''}
+    </div>`).join('');
+  lucide.createIcons();
+}
+function artHTML(icon){
+  if(icon.type==='image') return `<img src="${icon.value}" alt="">`;
+  if(icon.type==='emoji') return `<div class="chip"><span class="emoji">${icon.value}</span></div>`;
+  return `<div class="chip"><i data-lucide="${icon.value}"></i></div>`;
+}
+
+/* ================= ICON PICKER ================= */
+let pickingId = null;
+function openPicker(id){
+  pickingId = id;
+  $('#iconModal').classList.add('open');
+  $('#iconSearch').value=''; $('#emojiSearch').value='';
+  renderIconGrid(); renderEmojiGrid();
+}
+function renderIconGrid(){
+  const q = $('#iconSearch').value.toLowerCase().trim();
+  const names = [...new Set(ICON_NAMES)].filter(n=>lucide.icons[toPascal(n)] && (!q || n.includes(q)));
+  $('#iconGrid').innerHTML = names.map(n=>`<button data-icon="${n}"><i data-lucide="${n}"></i><span>${n.replace(/-/g,' ')}</span></button>`).join('') || '<p class="tip">No icons match. Try another word, or use the Emoji or Upload tab.</p>';
+  lucide.createIcons();
+}
+function toPascal(n){ return n.split('-').map(s=>s[0].toUpperCase()+s.slice(1)).join(''); }
+function renderEmojiGrid(){
+  const q = $('#emojiSearch').value.toLowerCase().trim();
+  // simple search using a tiny keyword map; otherwise show all
+  const list = q ? EMOJI.filter(e=>(EMOJI_KEYS[e]||'').includes(q)) : EMOJI;
+  $('#emojiGrid').innerHTML = list.map(e=>`<button data-emoji="${e}"><span class="emoji">${e}</span></button>`).join('') || '<p class="tip">No emoji match that word, but scroll the full list by clearing the search.</p>';
+}
+const EMOJI_KEYS = {'🌱':'plant sprout','🌿':'plant leaf herb','🌻':'flower sun','🌷':'flower','🌵':'cactus plant','🍀':'clover luck','🌳':'tree','🍁':'leaf fall','🐦':'bird','🐱':'cat pet','🐶':'dog pet','🐢':'turtle pet','🐸':'frog','🐝':'bee','🦋':'butterfly','🐠':'fish pet','🦉':'owl bird','🐰':'rabbit bunny pet','🦜':'parrot bird','🐾':'paw pet','🧹':'broom clean','🗑️':'trash','♻️':'recycle','🧽':'sponge clean','🧼':'soap clean','☀️':'sun weather','⛅':'cloud weather','🌧️':'rain weather','⛈️':'storm weather','🌈':'rainbow','❄️':'snow','🌡️':'thermometer weather','💰':'money bank','🪙':'coin money','💵':'money dollar','🏦':'bank','🧮':'math abacus','🎨':'art palette','🖌️':'art brush','🖼️':'art picture frame','✏️':'pencil','📝':'note write','📖':'book read','📚':'books library','📰':'newspaper news','📬':'mail','✉️':'mail letter','📣':'megaphone announce','🎤':'mic','🎧':'headphones music','🎵':'music','🎶':'music','🎸':'guitar music','🥁':'drum music','🎹':'piano music','📷':'camera photo','📸':'camera photo','🎬':'movie film','💻':'laptop computer tech','🖥️':'computer tech','⌨️':'keyboard','🖱️':'mouse','🔌':'plug tech','🔋':'battery','💡':'light bulb idea','🔦':'flashlight','🚪':'door','🔑':'key','🔒':'lock','🕐':'clock time','⏰':'alarm clock time','⏳':'hourglass time','📅':'calendar','🗓️':'calendar','📌':'pin','📎':'paperclip','✂️':'scissors','📏':'ruler','🧪':'science','🔬':'microscope science','🔭':'telescope space','🚀':'rocket space','🌍':'earth globe world','🗺️':'map','🧭':'compass','🏆':'trophy','🥇':'medal','👑':'crown','🎁':'gift','🎉':'party','🎈':'balloon party','🎂':'cake birthday','🍎':'apple snack','🍕':'pizza','🍪':'cookie snack','🥛':'milk','🍿':'popcorn','🥕':'carrot','🍴':'fork lunch','⚽':'soccer ball sports','🏀':'basketball sports','🏈':'football sports','⚾':'baseball sports','🚲':'bike','🏃':'run','👫':'friends buddy','🤝':'handshake','🙌':'hands','👏':'clap','👋':'wave hello greet','💪':'strong','🧠':'brain','😀':'smile','😂':'laugh joke','😎':'cool','🤔':'think','🤓':'nerd smart','🥳':'party','🦸':'hero','🧙':'wizard','🧑‍🚀':'astronaut space','🧑‍🔬':'scientist','🧑‍🏫':'teacher','🧑‍🎨':'artist','🧑‍🍳':'chef cook','🧑‍🌾':'farmer garden','🧑‍💻':'coder tech','🕵️':'detective','🔧':'wrench tool fix','🔨':'hammer tool','🧰':'toolbox','🎒':'backpack','📦':'box package','🛒':'cart','🧩':'puzzle','🎲':'dice game','🎮':'game','🎯':'target','🧸':'bear','🔔':'bell','📻':'radio','🚌':'bus','🚗':'car','✈️':'plane','🏠':'home house','🏫':'school','⭐':'star','🌟':'star','✨':'sparkle','⚡':'lightning energy','🔥':'fire','💧':'water drop','🪴':'plant','🐛':'bug','🦖':'dinosaur','🦄':'unicorn','🐼':'panda','🐻':'bear','🦁':'lion','🐯':'tiger','🦊':'fox','🐧':'penguin','🐬':'dolphin','🦈':'shark'};
+
+/* ================= EVENTS ================= */
+document.addEventListener('DOMContentLoaded', ()=>{
+  load();
+  $('#className').value = state.className; $('#classYear').value = state.classYear;
+  $('#showDesc').checked = state.showDesc; $('#showAssign').checked = state.showAssign; $('#showCut').checked = state.showCut;
+  renderSwatches(); syncSize(); renderJobs(); renderPreview();
+  lucide.createIcons();
+
+  ['className','classYear'].forEach(k=>$('#'+k).addEventListener('input', e=>{ state[k]=e.target.value; if(k==='classYear') state.tagline=null; save(); renderPreview(); }));
+  ['showDesc','showAssign','showCut'].forEach(k=>$('#'+k).addEventListener('change', e=>{ state[k]=e.target.checked; save(); renderPreview(); }));
+  $('#swatches').addEventListener('click', e=>{ const b=e.target.closest('[data-theme]'); if(!b) return; state.theme=b.dataset.theme; save(); renderSwatches(); renderPreview(); });
+  $('#sizeSeg').addEventListener('click', e=>{ const b=e.target.closest('[data-size]'); if(!b) return; state.size=b.dataset.size; save(); syncSize(); renderPreview(); });
+  $('#jobSearch').addEventListener('input', renderJobs);
+
+  $('#jobList').addEventListener('click', e=>{
+    const row = e.target.closest('.job'); if(!row) return; const id=row.dataset.id;
+    if(e.target.closest('[data-pick]')) return openPicker(id);
+    if(e.target.closest('[data-edit]')) return openEdit(id);
+    if(e.target.matches('[data-toggle]')) return toggle(id, e.target.checked);
+    // clicking the row toggles it too
+    toggle(id, !state.selected.includes(id));
+  });
+  function toggle(id,on){
+    state.selected = state.selected.filter(x=>x!==id);
+    if(on) state.selected.push(id);
+    save(); renderJobs(); renderPreview();
+  }
+  $('#selectFeatured').onclick = ()=>{ state.selected = [...new Set([...state.selected, ...FEATURED_IDS])]; save(); renderJobs(); renderPreview(); };
+  $('#clearAll').onclick = ()=>{ state.selected=[]; save(); renderJobs(); renderPreview(); };
+  $('#resetAll').onclick = ()=>{ if(confirm('Reset everything? This clears your picks, edits, custom jobs and uploaded pictures.')){ localStorage.removeItem(STORAGE_KEY); location.reload(); } };
+  $('#addCustom').onclick = ()=>{
+    const id = 'custom-'+Date.now();
+    state.custom.push({id, name:'My Custom Job', desc:'Type what this job does here.', icon:{type:'lucide',value:'star'}});
+    state.selected.push(id); save(); renderJobs(); renderPreview(); openEdit(id);
+  };
+  $('#printBtn').onclick = ()=>{ if(!state.selected.length) return alert('Pick at least one job first.'); window.print(); };
+
+  // ----- edit in place on the preview -----
+  const pv = $('#preview');
+  pv.addEventListener('click', e=>{
+    const card = e.target.closest('.card'); if(!card) return; const id = card.dataset.id;
+    const act = e.target.closest('[data-act]');
+    if(e.target.closest('.art') || (act && act.dataset.act==='pic')) return openPicker(id);
+    if(!act) return;
+    const i = state.selected.indexOf(id);
+    if(act.dataset.act==='remove'){ toggle(id,false); }
+    if(act.dataset.act==='up' && i>0){ [state.selected[i-1],state.selected[i]]=[state.selected[i],state.selected[i-1]]; save(); renderPreview(); }
+    if(act.dataset.act==='down' && i<state.selected.length-1){ [state.selected[i+1],state.selected[i]]=[state.selected[i],state.selected[i+1]]; save(); renderPreview(); }
+  });
+  // stop Enter from adding line breaks in one-line fields
+  pv.addEventListener('keydown', e=>{
+    if(e.key==='Enter' && e.target.matches('[contenteditable]') && !e.target.matches('.desc')){ e.preventDefault(); e.target.blur(); }
+    if(e.key==='Escape' && e.target.matches('[contenteditable]')) e.target.blur();
+  });
+  // live-mirror shared fields (class name, tagline, label) to the other cards while typing
+  pv.addEventListener('input', e=>{
+    const el=e.target; if(!el.matches('[contenteditable]')) return;
+    const f=el.dataset.field; if(!['className','tagline','jdLabel'].includes(f)) return;
+    pv.querySelectorAll(`[data-field="${f}"]`).forEach(o=>{ if(o!==el) o.textContent=el.textContent; });
+  });
+  pv.addEventListener('focusout', e=>{
+    const el=e.target; if(!el.matches('[contenteditable]')) return;
+    const f=el.dataset.field, v=el.textContent.replace(/\s+/g,' ').trim();
+    if(f==='className'){ state.className=v; $('#className').value=v; save(); }
+    else if(f==='tagline'){ state.tagline=v; save(); }
+    else if(f==='jdLabel'){ state.jdLabel=v||'Job Description'; save(); }
+    else { const id=el.closest('.card').dataset.id; const patch={}; patch[f]= f==='name' ? (v||'Untitled Job') : v; setJob(id,patch); return; }
+    renderPreview();
+  });
+
+  // modal close
+  document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.modal-bg').classList.remove('open'));
+  document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
+  // picker tabs
+  $('#iconModal .tabs').addEventListener('click', e=>{
+    const b=e.target.closest('[data-tab]'); if(!b) return;
+    document.querySelectorAll('#iconModal .tabs button').forEach(x=>x.classList.toggle('active',x===b));
+    document.querySelectorAll('#iconModal [data-pane]').forEach(p=>p.style.display = p.dataset.pane===b.dataset.tab?'':'none');
+  });
+  $('#iconSearch').addEventListener('input', renderIconGrid);
+  $('#emojiSearch').addEventListener('input', renderEmojiGrid);
+  $('#iconGrid').addEventListener('click', e=>{ const b=e.target.closest('[data-icon]'); if(!b) return; setJob(pickingId,{icon:{type:'lucide',value:b.dataset.icon}}); $('#iconModal').classList.remove('open'); });
+  $('#emojiGrid').addEventListener('click', e=>{ const b=e.target.closest('[data-emoji]'); if(!b) return; setJob(pickingId,{icon:{type:'emoji',value:b.dataset.emoji}}); $('#iconModal').classList.remove('open'); });
+  $('#uploadInput').addEventListener('change', async e=>{
+    const f=e.target.files[0]; if(!f) return;
+    const dataUrl = await shrinkImage(f, 700);
+    setJob(pickingId,{icon:{type:'image',value:dataUrl}});
+    $('#iconModal').classList.remove('open'); e.target.value='';
+  });
+
+  // edit modal
+  let editingId=null;
+  function openEdit(id){ editingId=id; const j=getJob(id); $('#editName').value=j.name; $('#editDesc').value=j.desc; $('#editDelete').style.display = j.custom?'':'none'; $('#editModal').classList.add('open'); $('#editName').focus(); }
+  $('#editSave').onclick = ()=>{ setJob(editingId,{name:$('#editName').value.trim()||'Untitled Job', desc:$('#editDesc').value.trim()}); $('#editModal').classList.remove('open'); };
+  $('#editDelete').onclick = ()=>{ state.custom = state.custom.filter(c=>c.id!==editingId); state.selected=state.selected.filter(x=>x!==editingId); save(); renderJobs(); renderPreview(); $('#editModal').classList.remove('open'); };
+});
+function syncSize(){ document.querySelectorAll('#sizeSeg button').forEach(b=>b.classList.toggle('active',b.dataset.size===state.size)); }
+
+// Shrink uploaded images so they fit in browser storage and print crisply. SVGs are kept as-is.
+function shrinkImage(file, max){
+  return new Promise(res=>{
+    if(file.type==='image/svg+xml'){ const r=new FileReader(); r.onload=()=>res(r.result); return r.readAsDataURL(file); }
+    const img=new Image(); const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      const s=Math.min(1, max/Math.max(img.width,img.height));
+      const c=document.createElement('canvas'); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(url); res(c.toDataURL('image/png'));
+    };
+    img.src=url;
+  });
+}
+</script>
+</body>
+</html>
