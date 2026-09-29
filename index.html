@@ -127,6 +127,7 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 .icon-grid button:hover{border-color:var(--ui-accent);background:var(--ui-accent-soft)}
 .icon-grid button svg{width:26px;height:26px;color:var(--ui-text)}
 .icon-grid button .emoji{font-size:30px;line-height:1}
+.icon-grid button img{width:34px;height:34px;object-fit:contain}
 .upload-box{border:2px dashed var(--ui-border);border-radius:14px;padding:36px;text-align:center;color:var(--ui-muted)}
 .upload-box input{display:none}
 .tip{font-size:12px;color:var(--ui-muted);line-height:1.5;margin-top:10px}
@@ -171,6 +172,7 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 .size-quarter .card .art img{width:1.4in;height:1.4in}
 .size-quarter .card .title{font-size:1.9em}
 .size-quarter .card .desc{max-width:100%}
+.card .art .chip img.om{width:74%;height:74%;object-fit:contain}
 .card.no-desc .desc,.card.no-desc .jd{display:none}
 
 /* ============ THEMES (Edutopia palette) ============ */
@@ -437,12 +439,18 @@ try{ if((JSON.parse(localStorage.getItem('classJobsMaker.v1'))||{}).started) doc
   <div class="modal">
     <div class="mhead"><h3>Choose a picture</h3><button class="btn" data-close>Close</button></div>
     <div class="tabs">
-      <button class="active" data-tab="icons">Icons</button>
+      <button class="active" data-tab="pictures">Pictures</button>
+      <button data-tab="icons">Icons</button>
       <button data-tab="emoji">Emoji</button>
       <button data-tab="upload">Upload your own</button>
     </div>
     <div class="mbody">
-      <div data-pane="icons">
+      <div data-pane="pictures">
+        <input class="search" id="omSearch" placeholder="Search pictures (try: book, plant, music, robot)...">
+        <div class="icon-grid" id="omGrid"></div>
+        <p class="tip">Pictures by <a href="https://openmoji.org" target="_blank">OpenMoji</a>, the open-source emoji and icon project (CC BY-SA 4.0). They print the same on every computer.</p>
+      </div>
+      <div data-pane="icons" style="display:none">
         <input class="search" id="iconSearch" placeholder="Search icons (try: book, plant, music, robot)...">
         <div class="icon-grid" id="iconGrid"></div>
         <p class="tip">Icons from <a href="https://lucide.dev" target="_blank">Lucide</a> (free, open source).</p>
@@ -515,59 +523,59 @@ const THEMES = [
   {id:'clean',    name:'Clean & Simple',  bg:'#ffffff', fg:'#333333'},
 ];
 
-// featured = the classics that show up first. 50 jobs total.
+// featured = the classics that show up first. 50 jobs total. The 4th column is the OpenMoji hexcode (see openmoji/).
 const JOBS = [
- ['botanist','Botanist','Keeps all of the plants in our classroom alive. Makes sure they are watered and getting plenty of sunlight.','sprout',1],
- ['safety','Safety Manager','Makes sure the classroom door is shut anytime we leave and keeps an eye out for anything unsafe during the day.','shield-check',1],
- ['equipment','Equipment Manager','Carries our recess equipment outside and back inside whenever we travel to and from recess.','dumbbell',1],
- ['ornithologist','Ornithologist','Refills the classroom bird feeders when they get low. Records our bird watch data on the class chart every week.','bird',1],
- ['custodian','Class Custodian','Helps with any spills that happen during the day. Brings the trash cans in and out and vacuums the rugs every Friday.','trash-2',1],
- ['meteorologist','Meteorologist','Figures out the forecast each day and writes it on the board for the class to see.','cloud-sun',1],
- ['cfo','Chief Financial Officer','Tells the class about purchases made in the class store. Deposits money into all student bank accounts at the end of every week.','piggy-bank',1],
- ['curator','Curator','Finds and shares different pieces of art with the teacher. These will be displayed in the room for classmates to enjoy.','palette',1],
- ['poet','Poet Laureate','Finds a meaningful poem of the week to share. It will be put on display for classmates to read.','feather',1],
- ['jester','Class Jester','Comes up with a "Joke of the Week" that will be written on the board.','smile',1],
- ['tech','Tech Support','Helps fix small tech problems in the classroom. Makes sure all of the Chromebooks are plugged in at the end of every day.','monitor',1],
- ['journalist','Journalist','Writes an article for the class about the important events that happened during the past month.','newspaper',1],
- ['librarian','Librarian','Helps classmates find books in the classroom library. Suggests books to anyone who needs a recommendation.','book-open',1],
- ['assistant','Assistant to the Regional Manager','Passes out papers when needed and sorts paperwork into student mailboxes each morning. The teacher\'s first call when help is needed.','mail',1],
- ['lineleader','Line Leader','Leads the class in a quiet, straight line whenever we travel through the school.','footprints',1],
- ['caboose','Caboose','Walks at the very end of the line, turns off the lights, and makes sure no one gets left behind.','flag',1],
- ['messenger','Messenger','Delivers notes, messages, and papers to the office and to other classrooms.','send',1],
- ['board','Board Manager','Erases and cleans the whiteboard and keeps the markers ready to go.','pencil',1],
- ['timekeeper','Timekeeper','Watches the clock and gives the class a heads-up before it is time to switch activities.','clock',1],
- ['recycling','Recycling Ranger','Makes sure paper and plastic go in the recycling bin instead of the trash.','recycle',1],
- ['pencils','Pencil Sharpener','Keeps a cup of sharpened pencils ready for any classmate who needs one.','pen-tool',0],
- ['passer','Paper Passer','Hands out papers and supplies quickly and quietly.','file-text',0],
- ['collector','Paper Collector','Collects finished work and stacks it neatly in the turn-in bin.','inbox',0],
- ['attendance','Attendance Monitor','Counts who is here each morning and reports the number to the teacher.','clipboard-check',0],
- ['calendar','Calendar Keeper','Updates the class calendar with today\'s date and any upcoming events.','calendar',0],
- ['lights','Light Monitor','Turns the lights off when we leave the room and back on when we return.','lightbulb',0],
- ['door','Door Holder','Holds the door open for the class as we come and go.','door-open',0],
- ['lunch','Lunch Count Helper','Takes the lunch count each morning and turns it in to the office.','utensils',0],
- ['snack','Snack Helper','Passes out snacks and helps everyone clean up afterward.','apple',0],
- ['sanitizer','Sanitizer','Wipes down the desks and tables at the end of the day.','spray-can',0],
- ['supplies','Supply Manager','Keeps the supply shelf organized and lets the teacher know when we are running low on something.','package',0],
- ['materials','Materials Manager','Hands out and collects science and art materials during projects.','flask-conical',0],
- ['pet','Pet Caretaker','Feeds and cares for our classroom pet and keeps its home clean.','paw-print',0],
- ['dj','DJ','Picks the music for work time and transitions from our class-approved playlist.','music',0],
- ['photographer','Photographer','Takes photos of class activities for our newsletter and bulletin boards.','camera',0],
- ['historian','Historian','Keeps a record of the fun and important things that happen in our class this year.','scroll',0],
- ['cartographer','Cartographer','Keeps our maps and globe ready to use and helps us find the places we are learning about.','map',0],
- ['greeter','Greeter','Welcomes visitors and new students and helps them feel at home in our room.','hand',0],
- ['subhelper','Substitute Helper','Helps a substitute teacher learn our routines and where everything is.','life-buoy',0],
- ['kindness','Kindness Ambassador','Notices acts of kindness and adds them to our kindness wall.','heart',0],
- ['birthday','Birthday Coordinator','Keeps track of birthdays and helps the class celebrate them.','cake',0],
- ['encourager','Encourager','Cheers on classmates and reminds everyone to keep trying when things get tough.','megaphone',0],
- ['chairs','Chair Stacker','Makes sure chairs are pushed in and stacked at the end of the day.','armchair',0],
- ['backpack','Backpack Inspector','Reminds classmates to pack up folders, planners, and homework before dismissal.','backpack',0],
- ['buddy','Reading Buddy','Reads with a classmate or a younger student during buddy time.','users',0],
- ['mathhelper','Math Helper','Helps classmates who are stuck on a math problem after they have tried it on their own.','calculator',0],
- ['wordwizard','Word Wizard','Adds a new vocabulary word to our word wall each week.','sparkles',0],
- ['announcer','Announcer','Reads the morning announcements and class reminders out loud.','mic',0],
- ['gardener','Gardener','Cares for our school garden or window garden.','flower',0],
- ['energy','Energy Saver','Turns off screens, projectors, and lights when they are not being used.','zap',0],
-].map(j=>({id:j[0],name:j[1],desc:j[2],icon:{type:'lucide',value:j[3]},featured:!!j[4],custom:false}));
+ ['botanist','Botanist','Keeps all of the plants in our classroom alive. Makes sure they are watered and getting plenty of sunlight.','1F331',1],
+ ['safety','Safety Manager','Makes sure the classroom door is shut anytime we leave and keeps an eye out for anything unsafe during the day.','1F6E1',1],
+ ['equipment','Equipment Manager','Carries our recess equipment outside and back inside whenever we travel to and from recess.','1F3C0',1],
+ ['ornithologist','Ornithologist','Refills the classroom bird feeders when they get low. Records our bird watch data on the class chart every week.','1F426',1],
+ ['custodian','Class Custodian','Helps with any spills that happen during the day. Brings the trash cans in and out and vacuums the rugs every Friday.','1F9F9',1],
+ ['meteorologist','Meteorologist','Figures out the forecast each day and writes it on the board for the class to see.','26C5',1],
+ ['cfo','Chief Financial Officer','Tells the class about purchases made in the class store. Deposits money into all student bank accounts at the end of every week.','1F4B0',1],
+ ['curator','Curator','Finds and shares different pieces of art with the teacher. These will be displayed in the room for classmates to enjoy.','1F3A8',1],
+ ['poet','Poet Laureate','Finds a meaningful poem of the week to share. It will be put on display for classmates to read.','1FAB6',1],
+ ['jester','Class Jester','Comes up with a "Joke of the Week" that will be written on the board.','1F939',1],
+ ['tech','Tech Support','Helps fix small tech problems in the classroom. Makes sure all of the Chromebooks are plugged in at the end of every day.','1F4BB',1],
+ ['journalist','Journalist','Writes an article for the class about the important events that happened during the past month.','1F4F0',1],
+ ['librarian','Librarian','Helps classmates find books in the classroom library. Suggests books to anyone who needs a recommendation.','1F4DA',1],
+ ['assistant','Assistant to the Regional Manager','Passes out papers when needed and sorts paperwork into student mailboxes each morning. The teacher\'s first call when help is needed.','1F4EC',1],
+ ['lineleader','Line Leader','Leads the class in a quiet, straight line whenever we travel through the school.','1F463',1],
+ ['caboose','Caboose','Walks at the very end of the line, turns off the lights, and makes sure no one gets left behind.','1F683',1],
+ ['messenger','Messenger','Delivers notes, messages, and papers to the office and to other classrooms.','1F4E8',1],
+ ['board','Board Manager','Erases and cleans the whiteboard and keeps the markers ready to go.','1F9FD',1],
+ ['timekeeper','Timekeeper','Watches the clock and gives the class a heads-up before it is time to switch activities.','23F0',1],
+ ['recycling','Recycling Ranger','Makes sure paper and plastic go in the recycling bin instead of the trash.','267B',1],
+ ['pencils','Pencil Sharpener','Keeps a cup of sharpened pencils ready for any classmate who needs one.','270F',0],
+ ['passer','Paper Passer','Hands out papers and supplies quickly and quietly.','1F4C4',0],
+ ['collector','Paper Collector','Collects finished work and stacks it neatly in the turn-in bin.','1F4E5',0],
+ ['attendance','Attendance Monitor','Counts who is here each morning and reports the number to the teacher.','1F4CB',0],
+ ['calendar','Calendar Keeper','Updates the class calendar with today\'s date and any upcoming events.','1F4C5',0],
+ ['lights','Light Monitor','Turns the lights off when we leave the room and back on when we return.','1F4A1',0],
+ ['door','Door Holder','Holds the door open for the class as we come and go.','1F6AA',0],
+ ['lunch','Lunch Count Helper','Takes the lunch count each morning and turns it in to the office.','1F37D',0],
+ ['snack','Snack Helper','Passes out snacks and helps everyone clean up afterward.','1F34E',0],
+ ['sanitizer','Sanitizer','Wipes down the desks and tables at the end of the day.','1F9FC',0],
+ ['supplies','Supply Manager','Keeps the supply shelf organized and lets the teacher know when we are running low on something.','1F4E6',0],
+ ['materials','Materials Manager','Hands out and collects science and art materials during projects.','1F9EA',0],
+ ['pet','Pet Caretaker','Feeds and cares for our classroom pet and keeps its home clean.','1F43E',0],
+ ['dj','DJ','Picks the music for work time and transitions from our class-approved playlist.','1F3A7',0],
+ ['photographer','Photographer','Takes photos of class activities for our newsletter and bulletin boards.','1F4F7',0],
+ ['historian','Historian','Keeps a record of the fun and important things that happen in our class this year.','1F4DC',0],
+ ['cartographer','Cartographer','Keeps our maps and globe ready to use and helps us find the places we are learning about.','1F5FA',0],
+ ['greeter','Greeter','Welcomes visitors and new students and helps them feel at home in our room.','1F44B',0],
+ ['subhelper','Substitute Helper','Helps a substitute teacher learn our routines and where everything is.','1F6DF',0],
+ ['kindness','Kindness Ambassador','Notices acts of kindness and adds them to our kindness wall.','2764',0],
+ ['birthday','Birthday Coordinator','Keeps track of birthdays and helps the class celebrate them.','1F382',0],
+ ['encourager','Encourager','Cheers on classmates and reminds everyone to keep trying when things get tough.','1F4E3',0],
+ ['chairs','Chair Stacker','Makes sure chairs are pushed in and stacked at the end of the day.','1FA91',0],
+ ['backpack','Backpack Inspector','Reminds classmates to pack up folders, planners, and homework before dismissal.','1F392',0],
+ ['buddy','Reading Buddy','Reads with a classmate or a younger student during buddy time.','1F9D1-200D-1F91D-200D-1F9D1',0],
+ ['mathhelper','Math Helper','Helps classmates who are stuck on a math problem after they have tried it on their own.','1F9EE',0],
+ ['wordwizard','Word Wizard','Adds a new vocabulary word to our word wall each week.','1FA84',0],
+ ['announcer','Announcer','Reads the morning announcements and class reminders out loud.','1F3A4',0],
+ ['gardener','Gardener','Cares for our school garden or window garden.','1F33B',0],
+ ['energy','Energy Saver','Turns off screens, projectors, and lights when they are not being used.','26A1',0],
+].map(j=>({id:j[0],name:j[1],desc:j[2],icon:{type:'openmoji',value:j[3]},featured:!!j[4],custom:false}));
 
 // Curated Lucide icon names for the picker (all valid in lucide 0.460)
 const ICON_NAMES = `sprout leaf flower trees tree-pine shield-check shield dumbbell volleyball bird cat dog fish rabbit turtle squirrel paw-print bug snail
@@ -588,6 +596,161 @@ bookmark list-checks list-todo check-check check-circle-2 circle-help info alert
  .filter(n=>!/-off$/.test(n) && !/syringe|pill|stethoscope/.test(n)); // keep it kid-friendly and skip anything odd
 
 const EMOJI = ('🌱 🌿 🌻 🌷 🌵 🍀 🌳 🍁 🐦 🐱 🐶 🐢 🐸 🐝 🦋 🐠 🦉 🐰 🦜 🐾 🧹 🗑️ ♻️ 🧽 🧼 ☀️ ⛅ 🌧️ ⛈️ 🌈 ❄️ 🌡️ 💰 🪙 💵 🏦 🧮 🎨 🖌️ 🖼️ ✏️ 📝 📖 📚 📰 📬 ✉️ 📣 🎤 🎧 🎵 🎶 🎸 🥁 🎹 📷 📸 🎬 💻 🖥️ ⌨️ 🖱️ 🔌 🔋 💡 🔦 🕯️ 🚪 🔑 🔒 🕐 ⏰ ⏳ 📅 🗓️ 📌 📎 ✂️ 📏 📐 🧪 🔬 🔭 🧲 🚀 🛰️ 🌍 🗺️ 🧭 🏳️ 🚩 🏆 🥇 🎖️ 🏅 👑 🎁 🎉 🎊 🎈 🎂 🍎 🍌 🍊 🍕 🥪 🍪 🥛 🍿 🥕 🧃 🍽️ 🍴 ⚽ 🏀 🏈 ⚾ 🎾 🏐 🥏 🛹 🚲 🛴 🏃 🚶 🧍 👫 👥 🙋 🤝 🙌 👏 👋 ✋ 🖐️ 💪 🧠 👀 👂 😀 😄 😂 🤣 😎 🤔 🤓 🧐 🥳 🤩 😴 🦸 🧙 🧑‍🚀 🧑‍🔬 🧑‍🏫 🧑‍🎨 🧑‍🍳 🧑‍🌾 🧑‍💻 🧑‍🚒 🕵️ 🧑‍⚕️ 🛠️ 🔧 🔨 🪛 🧰 🪜 🎒 👓 🧢 📦 🛒 🏷️ 🎟️ 🧩 🎲 🎮 🎯 🪁 🪀 🧸 🛎️ 📯 🔔 📻 📺 🚌 🚗 🚂 ✈️ ⛵ 🏠 🏫 🏰 ⛺ 🏕️ 🌋 🏔️ 🌊 🌙 ⭐ 🌟 ✨ ⚡ 🔥 💧 🌪️ 🪴 🐛 🐞 🦎 🐍 🦖 🦕 🐲 🦄 🐴 🐮 🐷 🐑 🐔 🦆 🦢 🦩 🐧 🦈 🐬 🐳 🦀 🦞 🐌 🕷️ 🦔 🦫 🦥 🦘 🐨 🐼 🐻 🦁 🐯 🦒 🐘 🦏 🦓 🐒 🦍 🐿️ 🦇 🐺 🦊 🦝 🦡 🐗 🐎').split(' ');
+
+// OpenMoji pictures bundled in openmoji/ (CC BY-SA 4.0). [hexcode, search words]
+const OPENMOJI = [
+  ['1F331','seedling plant sprout botanist'],
+  ['1F6E1','shield safety protect'],
+  ['1F3C0','basketball ball sports equipment'],
+  ['1F426','bird ornithologist'],
+  ['1F9F9','broom clean sweep custodian'],
+  ['26C5','sun cloud weather meteorologist'],
+  ['1F4B0','money bag bank cfo'],
+  ['1F3A8','palette art paint curator'],
+  ['1FAB6','feather poet write'],
+  ['1F939','juggler juggling jester fun'],
+  ['1F4BB','laptop computer tech'],
+  ['1F4F0','newspaper news journalist'],
+  ['1F4DA','books library librarian'],
+  ['1F4EC','mailbox mail assistant'],
+  ['1F463','footprints line leader walk'],
+  ['1F683','railway car train caboose'],
+  ['1F4E8','envelope mail messenger'],
+  ['1F9FD','sponge clean board'],
+  ['23F0','alarm clock time timekeeper'],
+  ['267B','recycle recycling'],
+  ['270F','pencil write'],
+  ['1F4C4','page paper passer'],
+  ['1F4E5','inbox tray collector'],
+  ['1F4CB','clipboard attendance list'],
+  ['1F4C5','calendar date'],
+  ['1F4A1','light bulb idea lights'],
+  ['1F6AA','door'],
+  ['1F37D','plate fork knife lunch'],
+  ['1F34E','apple snack fruit'],
+  ['1F9FC','soap clean sanitizer'],
+  ['1F4E6','package box supplies'],
+  ['1F9EA','test tube science materials'],
+  ['1F43E','paw prints pet'],
+  ['1F3A7','headphones music dj'],
+  ['1F4F7','camera photo photographer'],
+  ['1F4DC','scroll history historian'],
+  ['1F5FA','map world cartographer'],
+  ['1F44B','wave hand hello greeter'],
+  ['1F6DF','ring buoy life preserver helper'],
+  ['2764','heart love kindness'],
+  ['1F382','cake birthday'],
+  ['1F4E3','megaphone announce encourager'],
+  ['1FA91','chair'],
+  ['1F392','backpack school'],
+  ['1F9D1-200D-1F91D-200D-1F9D1','people holding hands buddy friends'],
+  ['1F9EE','abacus math count'],
+  ['1FA84','magic wand wizard'],
+  ['1F3A4','microphone announcer sing'],
+  ['1F33B','sunflower flower garden gardener'],
+  ['26A1','lightning energy power'],
+  ['1F431','cat pet'],
+  ['1F436','dog pet'],
+  ['1F422','turtle pet'],
+  ['1F438','frog'],
+  ['1F41D','bee honey'],
+  ['1F98B','butterfly'],
+  ['1F420','fish pet'],
+  ['1F989','owl bird'],
+  ['1F430','rabbit bunny'],
+  ['1F99C','parrot bird'],
+  ['1F427','penguin'],
+  ['1F42C','dolphin'],
+  ['1F98A','fox'],
+  ['1F43C','panda'],
+  ['1F981','lion'],
+  ['1F984','unicorn'],
+  ['1F996','dinosaur t-rex'],
+  ['1F41E','ladybug bug'],
+  ['1F40C','snail'],
+  ['1F994','hedgehog'],
+  ['1F33F','herb leaf plant'],
+  ['1F337','tulip flower'],
+  ['1F335','cactus plant'],
+  ['1F340','clover luck'],
+  ['1F333','tree'],
+  ['1F341','maple leaf fall'],
+  ['1FAB4','potted plant'],
+  ['2600','sun weather'],
+  ['1F308','rainbow'],
+  ['2744','snowflake snow winter'],
+  ['1F327','rain cloud weather'],
+  ['1F321','thermometer weather'],
+  ['2602','umbrella rain'],
+  ['1F319','moon night'],
+  ['2B50','star'],
+  ['1F31F','glowing star'],
+  ['2728','sparkles'],
+  ['1F525','fire'],
+  ['1F4A7','water drop'],
+  ['1F58D','crayon art'],
+  ['1F4DD','memo note write'],
+  ['1F4D6','open book read'],
+  ['1F4D3','notebook'],
+  ['1F4CF','ruler measure'],
+  ['2702','scissors cut'],
+  ['1F4CE','paperclip'],
+  ['1F4CC','pushpin'],
+  ['1F393','graduation cap'],
+  ['1F3EB','school building'],
+  ['1F514','bell'],
+  ['1F50D','magnifying glass search'],
+  ['1F511','key'],
+  ['1F512','lock'],
+  ['23F3','hourglass time'],
+  ['23F1','stopwatch timer'],
+  ['1F5A5','desktop computer'],
+  ['2328','keyboard'],
+  ['1F50C','plug power'],
+  ['1F50B','battery'],
+  ['1F916','robot'],
+  ['1F3AE','video game controller'],
+  ['1F526','flashlight'],
+  ['1F3B5','music note'],
+  ['1F3B8','guitar music'],
+  ['1F941','drum music'],
+  ['1F3B9','piano music'],
+  ['1F3BA','trumpet music'],
+  ['1F3AC','clapper movie film'],
+  ['1F58C','paintbrush art'],
+  ['1F3AD','theater masks drama'],
+  ['1F5BC','framed picture art'],
+  ['1F34C','banana fruit'],
+  ['1F955','carrot vegetable'],
+  ['1F355','pizza'],
+  ['1F36A','cookie'],
+  ['1F95B','milk'],
+  ['1F96A','sandwich'],
+  ['26BD','soccer ball sports'],
+  ['1F3C8','football sports'],
+  ['1F6B2','bicycle bike'],
+  ['1F3C6','trophy winner'],
+  ['1F451','crown'],
+  ['1F680','rocket space'],
+  ['1F30D','globe earth world'],
+  ['1F9ED','compass'],
+  ['1F52D','telescope space'],
+  ['1F52C','microscope science'],
+  ['1F381','gift present'],
+  ['1F389','party popper celebrate'],
+  ['1F9E9','puzzle piece'],
+  ['1F527','wrench tool fix'],
+  ['1F68C','bus'],
+  ['1F3E0','house home'],
+  ['1F91D','handshake'],
+  ['1F9E0','brain think'],
+  ['1F600','grinning face smile'],
+  ['1F9D9','mage wizard'],
+  ['1F9D1-200D-1F680','astronaut space'],
+  ['1F9D1-200D-1F3EB','teacher'],
+  ['2705','check mark done']
+];
+const omSrc = h=>`openmoji/${h}.svg`;
 
 const FEATURED_IDS = JOBS.filter(j=>j.featured).map(j=>j.id);
 
@@ -621,6 +784,7 @@ function setJob(id, patch){
 const $ = s=>document.querySelector(s);
 function iconHTML(icon){
   if(!icon) return '';
+  if(icon.type==='openmoji') return `<img src="${omSrc(icon.value)}" alt="">`;
   if(icon.type==='lucide') return `<i data-lucide="${icon.value}"></i>`;
   if(icon.type==='emoji')  return `<span class="emoji">${icon.value}</span>`;
   if(icon.type==='image')  return `<img src="${icon.value}" alt="">`;
@@ -777,6 +941,7 @@ function stepZoom(dir){
 }
 function artHTML(icon){
   if(icon.type==='image') return `<img src="${icon.value}" alt="">`;
+  if(icon.type==='openmoji') return `<div class="chip"><img class="om" src="${omSrc(icon.value)}" alt=""></div>`;
   if(icon.type==='emoji') return `<div class="chip"><span class="emoji">${icon.value}</span></div>`;
   return `<div class="chip"><i data-lucide="${icon.value}"></i></div>`;
 }
@@ -786,8 +951,16 @@ let pickingId = null;
 function openPicker(id){
   pickingId = id;
   $('#iconModal').classList.add('open');
-  $('#iconSearch').value=''; $('#emojiSearch').value='';
-  renderIconGrid(); renderEmojiGrid();
+  $('#omSearch').value=''; $('#iconSearch').value=''; $('#emojiSearch').value='';
+  // always open on the Pictures tab
+  document.querySelectorAll('#iconModal .tabs button').forEach(x=>x.classList.toggle('active',x.dataset.tab==='pictures'));
+  document.querySelectorAll('#iconModal [data-pane]').forEach(p=>p.style.display = p.dataset.pane==='pictures'?'':'none');
+  renderOmGrid(); renderIconGrid(); renderEmojiGrid();
+}
+function renderOmGrid(){
+  const q = $('#omSearch').value.toLowerCase().trim();
+  const list = OPENMOJI.filter(([h,k])=>!q || k.includes(q));
+  $('#omGrid').innerHTML = list.map(([h,k])=>`<button data-om="${h}" title="${k}"><img src="${omSrc(h)}" alt="" loading="lazy"><span>${k.split(' ').slice(0,2).join(' ')}</span></button>`).join('') || '<p class="tip">No pictures match. Try another word, or use the Icons, Emoji or Upload tab.</p>';
 }
 function renderIconGrid(){
   const q = $('#iconSearch').value.toLowerCase().trim();
@@ -861,7 +1034,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   $('#resetAll').onclick = ()=>{ if(confirm('Reset everything? This clears your picks, edits, custom jobs and uploaded pictures.')){ localStorage.removeItem(STORAGE_KEY); location.reload(); } };
   $('#addCustom').onclick = ()=>{
     const id = 'custom-'+Date.now();
-    state.custom.push({id, name:'My Custom Job', desc:'Type what this job does here.', icon:{type:'lucide',value:'star'}});
+    state.custom.push({id, name:'My Custom Job', desc:'Type what this job does here.', icon:{type:'openmoji',value:'2B50'}});
     state.selected.push(id); save(); renderJobs(); renderPreview(); openEdit(id);
   };
 
@@ -907,6 +1080,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     document.querySelectorAll('#iconModal .tabs button').forEach(x=>x.classList.toggle('active',x===b));
     document.querySelectorAll('#iconModal [data-pane]').forEach(p=>p.style.display = p.dataset.pane===b.dataset.tab?'':'none');
   });
+  $('#omSearch').addEventListener('input', renderOmGrid);
+  $('#omGrid').addEventListener('click', e=>{ const b=e.target.closest('[data-om]'); if(!b) return; setJob(pickingId,{icon:{type:'openmoji',value:b.dataset.om}}); $('#iconModal').classList.remove('open'); });
   $('#iconSearch').addEventListener('input', renderIconGrid);
   $('#emojiSearch').addEventListener('input', renderEmojiGrid);
   $('#iconGrid').addEventListener('click', e=>{ const b=e.target.closest('[data-icon]'); if(!b) return; setJob(pickingId,{icon:{type:'lucide',value:b.dataset.icon}}); $('#iconModal').classList.remove('open'); });

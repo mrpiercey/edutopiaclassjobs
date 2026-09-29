@@ -13,6 +13,7 @@ Live site: https://mrpiercey.github.io/edutopiaclassjobs/
 | `index.html` | The whole site. Everything is in this one file. |
 | `lucide.min.js` | The free icon library (bundled here so the site still works on school Wi-Fi that blocks outside scripts). |
 | `edu_bug.png` | The Edutopia "edu" bug, used in the header and as the browser tab icon. |
+| `openmoji/` | 150 color SVG pictures from [OpenMoji](https://openmoji.org), one for every job plus extras for the picker. See `openmoji/LICENSE.txt`. |
 | `README.md` | This file. |
 
 ## Brand
@@ -51,8 +52,9 @@ To update the site later, open `index.html` in the repository, click the pencil 
 
 ## Pictures
 
-Every job comes with a picture already. Teachers can swap in:
+Every job comes with an [OpenMoji](https://openmoji.org) picture already. Teachers can swap in:
 
+- **Pictures** from OpenMoji (150 are bundled in the `openmoji/` folder, so they work offline and print the same everywhere)
 - **Icons** from [Lucide](https://lucide.dev) (about 230 kid-friendly ones are built into the picker, all free and open source)
 - **Emoji** (about 260 of them, searchable)
 - **Their own image** uploaded from their computer. The picture never leaves their browser.
@@ -63,10 +65,11 @@ Good places to find free pictures to upload: [OpenMoji](https://openmoji.org), [
 
 Everything lives near the top of the `<script>` section in `index.html`:
 
-- **Jobs** are in the `JOBS` list. Each line is `['id', 'Title', 'Description', 'icon-name', featured]`. Set the last number to `1` to put it in "The classics" group or `0` for "More ideas."
+- **Jobs** are in the `JOBS` list. Each line is `['id', 'Title', 'Description', 'openmoji-hexcode', featured]`. The hexcode is the file name in `openmoji/` (for example `1F331` is the seedling). Set the last number to `1` to put it in "The classics" group or `0` for "More ideas."
 - **Looks** are in the `THEMES` list plus a matching block of CSS (search for `/* ============ THEMES`). Copy an existing one, rename it, and change the colors. Stick to the `--edu-*` palette variables to stay on brand.
+- **Picker pictures** are in `OPENMOJI` (hexcode plus search words). To add one, download `color/svg/<hexcode>.svg` from the [OpenMoji repository](https://github.com/hfg-gmuend/openmoji) into `openmoji/` and add a line.
 - **Picker icons** are in `ICON_NAMES`. Any name from [lucide.dev/icons](https://lucide.dev/icons) works.
 
 ## Credits
 
-Icons by [Lucide](https://lucide.dev) (ISC license). Fonts (Poppins, Zilla Slab, Caveat) from [Google Fonts](https://fonts.google.com). Brand colors and the edu bug are Edutopia's. Built for teachers by a teacher.
+Pictures by [OpenMoji](https://openmoji.org), the open-source emoji and icon project (CC BY-SA 4.0). Icons by [Lucide](https://lucide.dev) (ISC license). Fonts (Poppins, Zilla Slab, Caveat) from [Google Fonts](https://fonts.google.com). Brand colors and the edu bug are Edutopia's. Built for teachers by a teacher.

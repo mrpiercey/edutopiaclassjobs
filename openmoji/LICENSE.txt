@@ -1,0 +1,8 @@
+The SVG files in this folder are from OpenMoji (https://openmoji.org),
+the open-source emoji and icon project by HfG Schwäbisch Gmünd.
+
+License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)
+Attribution: "All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0"
+
+Files are unmodified copies of color/svg/<hexcode>.svg from
+https://github.com/hfg-gmuend/openmoji
