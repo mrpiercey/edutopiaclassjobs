@@ -77,9 +77,19 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 #count{font-size:12px;color:var(--ui-muted)}
 
 /* preview area */
-#preview{flex:1;overflow:auto;padding:28px;display:flex;flex-direction:column;align-items:center;gap:24px}
-#preview .hint{color:var(--ui-muted);font-size:14px;text-align:center;max-width:420px;line-height:1.5;margin-top:60px}
-.sheet{width:8.5in;height:11in;background:#fff;box-shadow:0 6px 30px rgba(0,0,0,.14);position:relative;overflow:hidden;flex-shrink:0}
+#stage{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh}
+#zoombar{display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:8px 16px;border-bottom:1px solid var(--ui-border);background:var(--ui-panel);font-size:12px;color:var(--ui-muted)}
+#zoombar .zlabel{margin-right:auto;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+#zoombar button{border:1px solid var(--ui-border);background:#fff;color:#374151;border-radius:6px;height:28px;min-width:28px;padding:0 8px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:700}
+#zoombar button:hover{background:#f3f4f6}
+#zoombar button:disabled{opacity:.4;cursor:default}
+#zoombar button.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
+#zoombar button svg{width:15px;height:15px}
+#zoombar .zpct{min-width:42px;text-align:center;font-variant-numeric:tabular-nums;color:#111}
+#preview{flex:1;min-height:0;overflow:auto;padding:20px 28px 40px;display:flex;flex-direction:row;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:20px;--pv-scale:.55}
+#preview .hint{color:var(--ui-muted);font-size:14px;text-align:center;max-width:420px;line-height:1.5;margin:60px auto 0}
+.sheet-wrap{width:calc(8.5in * var(--pv-scale));height:calc(11in * var(--pv-scale));flex-shrink:0}
+.sheet{width:8.5in;height:11in;background:#fff;box-shadow:0 6px 30px rgba(0,0,0,.14);position:relative;overflow:hidden;flex-shrink:0;transform:scale(var(--pv-scale));transform-origin:top left}
 .sheet.landscape{width:11in;height:8.5in}
 .sheet .grid{display:grid;width:100%;height:100%}
 .sheet.size-full .grid{grid-template-columns:1fr;grid-template-rows:1fr}
@@ -212,8 +222,8 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
   #sidebar{width:100%;min-width:0;height:auto;border-right:0;border-bottom:1px solid var(--ui-border)}
   #sidebar footer{position:sticky;bottom:0;width:100%}
   #panels{padding-bottom:16px}
+  #stage{height:auto}
   #preview{padding:16px;overflow:visible}
-  .sheet{transform:scale(.45);transform-origin:top center;margin-bottom:calc(-11in * .55)}
 }
 /* ============ EDIT-IN-PLACE (screen only) ============ */
 .card [contenteditable]{cursor:text;border-radius:4px;outline:2px dashed transparent;outline-offset:3px;transition:outline-color .15s}
@@ -221,18 +231,21 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
 .card [contenteditable]:focus{outline-color:#4f46e5;outline-style:solid;background:rgba(255,255,255,.35)}
 .card .art{cursor:pointer;border-radius:50%}
 .card .art:hover{outline:2px dashed rgba(0,0,0,.3);outline-offset:6px}
-.card .toolbar{position:absolute;top:8px;right:8px;display:flex;gap:4px;opacity:0;transition:.15s;z-index:5}
+.card .toolbar{position:absolute;top:8px;right:8px;display:flex;gap:4px;opacity:0;transition:.15s;z-index:5;transform:scale(calc(1 / var(--pv-scale, 1)));transform-origin:top right}
 .card:hover .toolbar{opacity:1}
 .card .toolbar button{border:0;background:rgba(255,255,255,.95);color:#374151;border-radius:6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer}
 .card .toolbar button:hover{background:#4f46e5;color:#fff}
 .card .toolbar svg{width:15px;height:15px}
-.edit-hint{font-size:12px;color:var(--ui-muted);text-align:center;margin:0}
+.edit-hint{font-size:12px;color:var(--ui-muted);text-align:center;margin:0;width:100%}
 
 /* ============ PRINT ============ */
 @page{size:letter portrait;margin:0}
 @media print{
   html,body{height:auto;overflow:visible;background:#fff;display:block}
-  #sidebar,.modal-bg,#preview .hint,.card .toolbar,.edit-hint{display:none !important}
+  #sidebar,#zoombar,.modal-bg,#preview .hint,.card .toolbar,.edit-hint{display:none !important}
+  #stage{display:block;height:auto}
+  .sheet-wrap{width:auto;height:auto}
+  .sheet{transform:none}
   .card [contenteditable],.card .art{outline:none !important;background:transparent !important}
   #preview{padding:0;display:block;overflow:visible}
   .sheet{box-shadow:none;margin:0;page-break-after:always;break-after:page;width:8.5in;height:11in}
@@ -296,7 +309,16 @@ section.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;co
   </footer>
 </aside>
 
-<main id="preview"></main>
+<main id="stage">
+  <div id="zoombar">
+    <span class="zlabel">Preview size</span>
+    <button id="zoomOut" title="Smaller"><i data-lucide="zoom-out"></i></button>
+    <span class="zpct" id="zoomPct">55%</span>
+    <button id="zoomIn" title="Larger"><i data-lucide="zoom-in"></i></button>
+    <button id="zoomFit" title="Fit one whole page on screen"><i data-lucide="maximize"></i>Fit</button>
+  </div>
+  <div id="preview"></div>
+</main>
 
 <!-- Icon picker -->
 <div class="modal-bg" id="iconModal">
@@ -519,7 +541,7 @@ function renderPreview(){
       <button data-act="remove" title="Remove from print"><i data-lucide="x"></i></button></div>`;
   let i=0;
   pv.innerHTML = `<p class="edit-hint">Click any words on a card to change them. Click a picture to swap it.</p>` + pages.map(p=>`
-    <div class="sheet size-${state.size}">
+    <div class="sheet-wrap"><div class="sheet size-${state.size}">
       <div class="grid">${p.map(id=>{ const j=getJob(id); const idx=i++; return `
         <div class="card t-${state.theme} ${state.showDesc?'':'no-desc'}" data-id="${id}">
           ${decos}${tb(id,idx)}
@@ -535,8 +557,34 @@ function renderPreview(){
       </div>
       ${state.showCut && per>=2 ? '<hr class="cutline" style="top:50%">' : ''}
       ${state.showCut && per===4 ? '<hr class="cutline v">' : ''}
-    </div>`).join('');
+    </div></div>`).join('');
   lucide.createIcons();
+}
+
+/* ================= PREVIEW ZOOM ================= */
+const ZOOM_KEY = 'cjm_zoom', ZMIN = .25, ZMAX = 1, ZSTEP = .1;
+let zoomMode = window.innerWidth < 900 ? 'fit' : .5;   // 'fit' or a number
+try{ const z = JSON.parse(localStorage.getItem(ZOOM_KEY)); if(z==='fit' || (typeof z==='number' && z>=ZMIN && z<=ZMAX)) zoomMode = z; }catch(e){}
+function fitScale(){
+  const pv = $('#preview');
+  const w = (pv.clientWidth - 56) / (8.5*96);
+  const h = (pv.clientHeight - 90) / (11*96);
+  return Math.max(ZMIN, Math.min(ZMAX, w, h));
+}
+function currentScale(){ return zoomMode==='fit' ? fitScale() : zoomMode; }
+function applyZoom(){
+  const s = Math.round(currentScale()*100)/100;
+  $('#preview').style.setProperty('--pv-scale', s);
+  $('#zoomPct').textContent = Math.round(s*100) + '%';
+  $('#zoomOut').disabled = s <= ZMIN + .001;
+  $('#zoomIn').disabled = s >= ZMAX - .001;
+  $('#zoomFit').classList.toggle('active', zoomMode==='fit');
+  try{ localStorage.setItem(ZOOM_KEY, JSON.stringify(zoomMode)); }catch(e){}
+}
+function setZoom(mode){ zoomMode = mode; applyZoom(); }
+function stepZoom(dir){
+  const s = currentScale();
+  setZoom(Math.max(ZMIN, Math.min(ZMAX, Math.round((s + dir*ZSTEP)*10)/10)));
 }
 function artHTML(icon){
   if(icon.type==='image') return `<img src="${icon.value}" alt="">`;
@@ -572,7 +620,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   load();
   $('#className').value = state.className; $('#classYear').value = state.classYear;
   $('#showDesc').checked = state.showDesc; $('#showAssign').checked = state.showAssign; $('#showCut').checked = state.showCut;
-  renderSwatches(); syncSize(); renderJobs(); renderPreview();
+  renderSwatches(); syncSize(); renderJobs(); renderPreview(); applyZoom();
+  $('#zoomIn').onclick = ()=>stepZoom(1);
+  $('#zoomOut').onclick = ()=>stepZoom(-1);
+  $('#zoomFit').onclick = ()=>setZoom('fit');
+  window.addEventListener('resize', ()=>{ if(zoomMode==='fit') applyZoom(); });
   lucide.createIcons();
 
   ['className','classYear'].forEach(k=>$('#'+k).addEventListener('input', e=>{ state[k]=e.target.value; if(k==='classYear') state.tagline=null; save(); renderPreview(); }));
