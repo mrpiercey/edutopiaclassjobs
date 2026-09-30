@@ -12,6 +12,7 @@ Live site: https://mrpiercey.github.io/edutopiaclassjobs/
 |---|---|
 | `index.html` | The whole site. Everything is in this one file. |
 | `lucide.min.js` | The free icon library (bundled here so the site still works on school Wi-Fi that blocks outside scripts). |
+| `pptxgen.bundle.js` | [PptxGenJS](https://gitbrucecampbell.github.io/PptxGenJS/), bundled locally so the PowerPoint export works without outside scripts. Loaded only when someone exports. |
 | `edu_bug.png` | The Edutopia "edu" bug, used in the header and as the browser tab icon. |
 | `openmoji/` | 150 color SVG pictures from [OpenMoji](https://openmoji.org), one for every job plus extras for the picker. See `openmoji/LICENSE.txt`. |
 | `README.md` | This file. |
@@ -43,12 +44,13 @@ To update the site later, open `index.html` in the repository, click the pencil 
 1. **Start screen.** Tap the jobs you want. Use **Pick the classics** for a quick set, or search for something specific. Click **Make my cards** when you have at least one.
 2. Type the class name and year.
 3. Click a look. There are 12 to choose from, all built from the Edutopia palette and designed to print cleanly.
-4. Pick a print size.
+4. Pick a print size. Half sheet (2 per page) is the default.
 5. Change your mind about jobs any time in the list on the left, or click **Back to the start screen**. Use **+ Custom job** for anything that isn't on the list.
 6. Edit right on the cards: click any words to retype them, click the picture to swap it, and hover a card for the buttons to reorder or remove it. Changing the class name or the "Job Description" label on one card changes it on all of them.
 7. Click **Export** and choose:
    - **PDF.** Opens the print window. Choose **Save as PDF** as the printer (or an actual printer). Make sure "Background graphics" is turned on and margins are set to **None** or **Default** so the colors and borders print.
-   - **Slideshow.** Shows one job per slide for a projector or smartboard. Use the arrow keys or the on-screen buttons to move between jobs, **Full screen** for class, and **Esc** to exit. Opening the site with `#slideshow` on the end of the address jumps straight into the slideshow.
+   - **Slideshow.** Downloads a PowerPoint file (`.pptx`) with a title slide and one job per slide, styled to match the chosen look. Open it in PowerPoint, or upload it to Google Drive and open it with Google Slides (right-click the file, **Open with**, **Google Slides**). Google Slides has Poppins, Zilla Slab and Caveat built in, so the fonts carry over.
+   - **Present now.** Shows one job per slide full screen in the browser, for a projector or smartboard. Use the arrow keys or the on-screen buttons to move between jobs, **Full screen** for class, and **Esc** to exit. Opening the site with `#slideshow` on the end of the address jumps straight into it.
 
 ## Pictures
 
@@ -72,4 +74,4 @@ Everything lives near the top of the `<script>` section in `index.html`:
 
 ## Credits
 
-Pictures by [OpenMoji](https://openmoji.org), the open-source emoji and icon project (CC BY-SA 4.0). Icons by [Lucide](https://lucide.dev) (ISC license). Fonts (Poppins, Zilla Slab, Caveat) from [Google Fonts](https://fonts.google.com). Brand colors and the edu bug are Edutopia's. Built for teachers by a teacher.
+PowerPoint export by [PptxGenJS](https://github.com/gitbrucecampbell/PptxGenJS) (MIT). Pictures by [OpenMoji](https://openmoji.org), the open-source emoji and icon project (CC BY-SA 4.0). Icons by [Lucide](https://lucide.dev) (ISC license). Fonts (Poppins, Zilla Slab, Caveat) from [Google Fonts](https://fonts.google.com). Brand colors and the edu bug are Edutopia's. Built for teachers by a teacher.
