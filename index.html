@@ -3,17 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Class Jobs Maker</title>
-<meta name="description" content="Free, printable class job cards for teachers. Pick your jobs, choose a look, add pictures, and print.">
+<title>Class Jobs Maker · An Edutopia Classroom Tool</title>
+<meta name="description" content="Free, printable class job cards for teachers. Pick your jobs, choose a look, add pictures, then print, save a PDF, or present them on the board.">
 <link rel="icon" type="image/png" href="edu_bug.png">
 <meta name="theme-color" content="#FF4C00">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <!-- Brand fonts: Poppins stands in for Gotham (Google-safe), Zilla Slab for Museo Slab, Caveat for Helping Hand -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Zilla+Slab:wght@600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Zilla+Slab:wght@600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <script src="lucide.min.js"></script>
 <style>
-/* ============ APP SHELL ============ */
-*{box-sizing:border-box}
+/* ============================================================
+   EDUTOPIA CLASS JOBS MAKER · DESIGN SYSTEM
+   Shares its look with "Authentic or AI?": cream background,
+   slab headlines in Pacific Blue, flat corner circles, pill
+   buttons, white cards with soft shadows. Electric Orange stays
+   rare: the edu bug, the title accent, and one main button per
+   screen. Everything else draws on the rest of the palette.
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
 :root{
   /* Edutopia palette */
   --edu-orange:#FF4C00; --edu-dark-orange:#FF780D; --edu-tangerine:#FF9B0D; --edu-sunshine:#FFBC0D;
@@ -21,88 +28,233 @@
   --edu-purple:#532681; --edu-light-purple:#A973DF; --edu-pink:#E75CAE; --edu-salmon:#F27179;
   --edu-teal:#00AFAB; --edu-light-teal:#2AD2C9; --edu-green:#6FB300; --edu-light-green:#BDF22E;
   --edu-dark-grey:#333333; --edu-light-grey:#666666; --edu-cream:#FFF7ED; --edu-white:#FFFFFF;
-  /* UI roles. Electric Orange is reserved for the bug and the one primary action. */
-  --ui-bg:#F3F3F1; --ui-panel:#ffffff; --ui-border:#E3E3DF; --ui-text:var(--edu-midnight); --ui-muted:var(--edu-light-grey);
-  --ui-accent:var(--edu-space); --ui-accent-soft:#E8F3F8; --ui-focus:var(--edu-pacific);
+  /* soft tints of the palette, for backgrounds behind dark text */
+  --tint-blue:#DFF5FD; --tint-teal:#D9F5F3; --tint-purple:#EEE3F9; --tint-sun:#FFEFC2; --tint-pink:#FBE0EF; --tint-green:#EEF9CB;
+  --line:#E9E1D3;
+  --font-ui:'Poppins',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+  --font-slab:'Zilla Slab',Rockwell,Georgia,serif;
+  --shadow-card:0 4px 20px rgba(29,42,68,.12);
+  --shadow-pop:0 10px 40px rgba(29,42,68,.22);
+  --radius:18px;
+  --bar-h:64px;
+  --ui-focus:var(--edu-pacific);
 }
-html,body{margin:0;height:100%}
-body{font-family:'Poppins',system-ui,sans-serif;background:var(--ui-bg);color:var(--ui-text);display:flex;height:100vh;overflow:hidden}
-button{font-family:inherit;cursor:pointer}
-input,textarea,select{font-family:inherit;font-size:14px}
+html,body{height:100%}
+body{font-family:var(--font-ui);background:var(--edu-cream);color:var(--edu-midnight);font-size:16px;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;color:inherit}
+input,textarea,select{font-family:inherit;font-size:15px;color:var(--edu-midnight)}
+.hidden{display:none !important}
+svg.lucide{display:inline-block;vertical-align:middle;flex:0 0 auto}
 
-#sidebar{width:400px;min-width:400px;background:var(--ui-panel);border-right:1px solid var(--ui-border);display:flex;flex-direction:column;height:100vh}
-#sidebar header{padding:14px 18px 12px;border-bottom:1px solid var(--ui-border);display:grid;grid-template-columns:40px 1fr;column-gap:12px;align-items:center}
-#sidebar header .bug{width:40px;height:40px;display:block;grid-row:1/3}
-#sidebar header h1{margin:0;font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
-#sidebar header p{margin:2px 0 0;font-size:13px;color:var(--ui-muted)}
-#sidebar header p button{border:0;background:none;padding:0;color:var(--ui-accent);font-weight:600;font-size:12px;text-decoration:underline;font-family:inherit}
-#panels{flex:1;overflow-y:auto;padding:0 18px 100px}
-section.panel{padding:16px 0;border-bottom:1px solid var(--ui-border)}
-section.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--ui-muted);margin:0 0 10px;font-weight:700}
-.field{margin-bottom:10px}
-.field label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}
-.field input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--ui-border);border-radius:8px}
-.row{display:flex;gap:8px}
-.row .field{flex:1}
+/* ---------- App bar ---------- */
+#appbar{position:fixed;top:0;left:0;right:0;height:var(--bar-h);z-index:50;display:flex;align-items:center;gap:14px;padding:0 20px;background:#fff;box-shadow:0 2px 12px rgba(29,42,68,.10)}
+#appbar::after{content:"";position:absolute;left:0;right:0;top:100%;height:6px;
+  background:linear-gradient(90deg,var(--edu-pink) 0 14.3%,var(--edu-light-purple) 0 28.6%,var(--edu-pacific) 0 42.9%,var(--edu-light-teal) 0 57.2%,var(--edu-green) 0 71.5%,var(--edu-sunshine) 0 85.8%,var(--edu-tangerine) 0)}
+#appbar .brand{display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;padding:4px 8px 4px 4px;border-radius:12px}
+#appbar .brand:hover{background:var(--edu-cream)}
+#appbar .brand:focus-visible{outline:3px solid var(--edu-pacific)}
+#appbar .bug{width:42px;height:42px;display:block}
+.brand-name{font-family:var(--font-slab);font-weight:700;font-size:22px;color:var(--edu-midnight);display:block;line-height:1.1}
+.brand-sub{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--edu-light-grey);display:block;margin-top:1px}
+#appbar .spacer{flex:1}
+.steps{display:flex;gap:6px;align-items:center}
+.step{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--edu-light-grey);padding:5px 14px 5px 6px;border-radius:99px;background:#fff;border:2px solid transparent;display:flex;align-items:center;gap:8px;transition:all .15s}
+.step .n{width:24px;height:24px;border-radius:50%;background:#EDE6DA;color:var(--edu-midnight);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.step:hover{border-color:var(--line)}
+.step.on{color:var(--edu-midnight);background:var(--tint-blue)}
+.step.on .n{background:var(--edu-pacific);color:#fff}
+.step.past{color:var(--edu-midnight)}
+.step.past .n{background:var(--edu-green);color:#fff}
 
-/* layout swatches */
-.swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.swatch{border:2px solid var(--ui-border);border-radius:10px;padding:0;overflow:hidden;background:#fff;text-align:left;transition:.15s}
-.swatch:hover{transform:translateY(-1px)}
-.swatch.active{border-color:var(--ui-accent);box-shadow:0 0 0 3px var(--ui-accent-soft)}
-.swatch .sw-prev{height:46px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
-.swatch .sw-name{font-size:10px;padding:4px 6px;font-weight:700;color:var(--ui-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ---------- Screens ---------- */
+.screen{position:fixed;inset:var(--bar-h) 0 0 0;overflow-y:auto;display:none;
+  --r1:min(15vw,210px);--r2:min(11vw,150px);--r3:min(17vw,240px);
+  background:
+    radial-gradient(circle at 100% 0,var(--tint-blue) 0 var(--r1),transparent calc(var(--r1) + 1.5px)),
+    radial-gradient(circle at 0 100%,var(--tint-sun) 0 var(--r3),transparent calc(var(--r3) + 1.5px)),
+    radial-gradient(circle at 100% 100%,var(--tint-teal) 0 var(--r2),transparent calc(var(--r2) + 1.5px)),
+    var(--edu-cream)}
+.screen.active{display:block}
+.screen-inner{max-width:1200px;margin:0 auto;padding:36px 40px 60px}
 
-.seg{display:flex;border:1px solid var(--ui-border);border-radius:8px;overflow:hidden}
-.seg button{flex:1;border:0;background:#fff;padding:9px 4px;font-size:13px;font-weight:700;color:var(--ui-muted)}
-.seg button.active{background:var(--ui-accent);color:#fff}
-.check{display:flex;align-items:center;gap:8px;font-size:14px;margin:6px 0;cursor:pointer}
-.check input{width:16px;height:16px}
-
-/* jobs list */
-.jobs-tools{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
-.jobs-tools input{flex:1;min-width:120px;padding:7px 10px;border:1px solid var(--ui-border);border-radius:8px}
-.btn{border:1px solid var(--ui-border);background:#fff;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:700;color:var(--ui-text)}
-.btn:hover{background:#f6f7f9}
-.btn.primary{background:var(--edu-orange);border-color:var(--edu-orange);color:#fff}
+/* ---------- Buttons ---------- */
+.btn{font-weight:700;border-radius:99px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:15px;padding:10px 22px;
+  background:#fff;color:var(--edu-midnight);border:2.5px solid var(--edu-midnight);transition:transform .12s,box-shadow .12s,background .12s,color .12s;white-space:nowrap;line-height:1.2}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-pop)}
+.btn:active{transform:none}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn:focus-visible,.tile:focus-visible,.swatch:focus-visible{outline:3px solid var(--edu-pacific);outline-offset:3px}
+.btn.primary{background:var(--edu-orange);color:#fff;border-color:var(--edu-orange);font-size:20px;padding:14px 40px}
 .btn.primary:hover{background:#E64400;border-color:#E64400}
-.btn.primary:disabled{background:#C9C9C4;border-color:#C9C9C4;cursor:not-allowed}
-.btn.small{padding:4px 8px;font-size:11px}
-.job-group-title{font-size:11px;font-weight:700;color:var(--ui-muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px}
-.job{display:grid;grid-template-columns:22px 40px 1fr auto;gap:8px;align-items:center;padding:6px 6px;border-radius:8px;border:1px solid transparent}
-.job:hover{background:#f8f9fb}
-.job.selected{border-color:var(--ui-accent-soft);background:var(--ui-accent-soft)}
-.job input[type=checkbox]{width:16px;height:16px}
-.job .ico{width:40px;height:40px;border-radius:8px;background:#fff;border:1px solid var(--ui-border);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
-.job .ico:hover{border-color:var(--ui-accent)}
-.job .ico svg{width:24px;height:24px}
-.job .ico img{width:100%;height:100%;object-fit:contain}
-.job .ico .emoji{font-size:24px;line-height:1}
-.job .name{font-weight:700;font-size:14px}
-.job .desc{font-size:12px;color:var(--ui-muted);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.job .actions{display:flex;gap:2px}
-.job .actions button{border:0;background:transparent;color:var(--ui-muted);padding:4px;border-radius:6px}
-.job .actions button:hover{background:#eceef2;color:var(--ui-text)}
-.job .actions svg{width:15px;height:15px}
+.btn.dark{background:var(--edu-midnight);color:#fff}
+.btn.soft{background:var(--tint-blue);border-color:transparent}
+.btn.soft:hover{background:var(--edu-midnight);color:#fff}
+.btn.small{font-size:13.5px;padding:7px 16px;border-width:2px}
+.btn svg{width:1.15em;height:1.15em}
+.btn.primary svg{width:1em;height:1em}
 
-#sidebar footer{position:absolute;bottom:0;left:0;width:400px;padding:12px 18px;background:#fff;border-top:1px solid var(--ui-border);display:flex;gap:8px;align-items:center}
-#sidebar footer .btn.primary{flex:1;padding:11px;font-size:14px}
-#count{font-size:12px;color:var(--ui-muted)}
+/* ---------- Welcome ---------- */
+#screen-welcome{background:
+    radial-gradient(circle at 0 0,var(--edu-sunshine) 0 var(--r1),transparent calc(var(--r1) + 1.5px)),
+    radial-gradient(circle at 100% 14%,var(--edu-tech) 0 var(--r2),transparent calc(var(--r2) + 1.5px)),
+    radial-gradient(circle at 3% 100%,var(--edu-light-teal) 0 var(--r2),transparent calc(var(--r2) + 1.5px)),
+    radial-gradient(circle at 100% 100%,var(--edu-light-purple) 0 var(--r3),transparent calc(var(--r3) + 1.5px)),
+    var(--edu-cream)}
+#screen-welcome .screen-inner{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:34px}
+.bug.big{width:84px;height:84px;margin-bottom:16px}
+.kicker{font-weight:700;font-size:14px;letter-spacing:.22em;text-transform:uppercase;color:var(--edu-midnight);background:var(--edu-sunshine);padding:7px 20px;border-radius:99px;margin-bottom:22px}
+h1.hero{font-family:var(--font-slab);font-weight:700;font-size:clamp(52px,7.5vw,92px);line-height:1.02;color:var(--edu-pacific)}
+h1.hero .hl{color:var(--edu-orange)}
+.hero-tag{font-size:clamp(18px,2vw,23px);color:var(--edu-dark-grey);max-width:780px;margin:20px 0 8px;line-height:1.55}
+.hero-tag strong{color:var(--edu-midnight)}
+.how-steps{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+.how-step{display:flex;align-items:center;gap:12px;text-align:left;background:#fff;border-radius:16px;box-shadow:var(--shadow-card);padding:12px 20px 12px 12px}
+.how-step b{display:block;font-size:17px;color:var(--edu-midnight)}
+.how-step small{display:block;font-size:14px;color:var(--edu-light-grey);margin-top:1px}
+.how-ico{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--edu-midnight);flex:0 0 auto}
+.how-ico svg{width:24px;height:24px}
+.how-step.s1 .how-ico{background:var(--edu-sunshine)}
+.how-step.s2 .how-ico{background:var(--edu-pink)}
+.how-step.s3 .how-ico{background:var(--edu-light-green)}
+.actions{display:flex;gap:16px;margin-top:32px;flex-wrap:wrap;justify-content:center;align-items:center}
+.foot-note{margin-top:26px;font-size:14px;color:var(--edu-light-grey)}
+.teacher-guide{max-width:820px;width:100%;margin-top:26px;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-card);text-align:left}
+.teacher-guide summary{cursor:pointer;padding:17px 26px;font-weight:700;font-size:16px;color:var(--edu-midnight);list-style:none;display:flex;align-items:center;gap:10px}
+.teacher-guide summary::-webkit-details-marker{display:none}
+.teacher-guide summary::before{content:"▸";color:var(--edu-pacific);font-size:15px;transition:transform .15s}
+.teacher-guide[open] summary::before{transform:rotate(90deg)}
+.teacher-guide summary .tg-sub{font-weight:500;color:var(--edu-light-grey);font-size:14px}
+.tg-body{padding:2px 26px 22px;display:grid;gap:11px}
+.tg-body p{font-size:15.5px;line-height:1.55;color:var(--edu-dark-grey)}
+.tg-body b{color:var(--edu-midnight)}
+
+/* ---------- Pick your jobs ---------- */
+#screen-jobs .screen-inner{padding-bottom:40px}
+.page-head{margin-bottom:22px}
+.page-head h2{font-family:var(--font-slab);font-weight:700;font-size:clamp(32px,3.6vw,46px);line-height:1.05;color:var(--edu-midnight)}
+.page-head .lede{font-size:18px;color:var(--edu-dark-grey);margin-top:6px;line-height:1.5}
+.page-head .lede b{color:var(--edu-midnight)}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.search{position:relative;flex:1;min-width:240px;max-width:440px;display:block}
+.search input{width:100%;padding:12px 18px 12px 46px;border:2.5px solid transparent;border-radius:99px;background:#fff;box-shadow:var(--shadow-card);font-size:15px;font-weight:600}
+.search input:focus{outline:none;border-color:var(--edu-pacific)}
+.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--edu-light-grey);pointer-events:none}
+.group-title{font-family:var(--font-slab);font-weight:700;font-size:26px;margin:28px 0 14px;display:flex;align-items:baseline;gap:12px;color:var(--edu-midnight)}
+.group-title small{font-family:var(--font-ui);font-weight:600;font-size:12.5px;color:var(--edu-light-grey);letter-spacing:.1em;text-transform:uppercase}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:18px}
+.tile{position:relative;border:0;border-radius:20px;padding:18px 18px 16px;text-align:left;background:var(--tile,var(--edu-tech));color:var(--edu-midnight);cursor:pointer;
+  display:flex;flex-direction:column;gap:9px;min-height:200px;box-shadow:var(--shadow-card);transition:transform .13s,box-shadow .13s;overflow:hidden;outline:3px solid transparent;outline-offset:-3px}
+.tile:hover{transform:translateY(-3px);box-shadow:var(--shadow-pop)}
+.tile.c1{--tile:var(--edu-tech)} .tile.c2{--tile:var(--edu-light-teal)} .tile.c3{--tile:var(--edu-light-purple)}
+.tile.c4{--tile:var(--edu-sunshine)} .tile.c5{--tile:var(--edu-light-green)} .tile.c6{--tile:var(--edu-pink)}
+.tile .pic{width:86px;height:86px;border-radius:50%;background:rgba(255,255,255,.78);display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto}
+.tile .pic img{width:70%;height:70%;object-fit:contain}
+.tile .pic svg{width:44px;height:44px;stroke-width:1.6}
+.tile .pic .emoji{font-size:44px;line-height:1}
+.tile .name{font-family:var(--font-slab);font-weight:700;font-size:23px;line-height:1.08;padding-right:32px;text-wrap:balance}
+.tile .desc{font-size:13.5px;line-height:1.4;color:var(--edu-dark-grey);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tile .tick{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.72);border:2px solid rgba(29,42,68,.12);display:flex;align-items:center;justify-content:center;color:#fff;transition:.15s}
+.tile .tick svg{width:19px;height:19px;display:none;stroke-width:3}
+.tile.on{outline-color:var(--edu-midnight);background:#fff}
+.tile.on .pic{background:var(--tile)}
+.tile.on .tick{background:var(--edu-green);border-color:var(--edu-green)}
+.tile.on .tick svg{display:block}
+.tile .edit{position:absolute;right:12px;bottom:12px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.72);display:flex;align-items:center;justify-content:center;color:var(--edu-midnight);opacity:0;transition:.15s}
+.tile .edit svg{width:15px;height:15px}
+.tile:hover .edit,.tile.on .edit{opacity:1}
+.tile .edit:hover{background:var(--edu-midnight);color:#fff}
+.tile.on .edit{background:var(--tint-blue)}
+@media (hover:none){.tile .edit{opacity:1}}
+.empty{background:#fff;border-radius:var(--radius);padding:26px;text-align:center;color:var(--edu-dark-grey);box-shadow:var(--shadow-card);margin-top:20px}
+.jobs-foot{position:sticky;bottom:0;background:#fff;box-shadow:0 -4px 24px rgba(29,42,68,.10);padding:12px 24px;z-index:5}
+.jobs-foot .inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.jobs-foot .count{font-weight:700;font-size:16px;margin-right:auto;color:var(--edu-midnight)}
+.picked{display:flex;align-items:center}
+.picked .pip{width:38px;height:38px;border-radius:50%;background:var(--edu-cream);border:2.5px solid #fff;box-shadow:var(--shadow-card);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-right:-10px}
+.picked .pip img{width:68%;height:68%;object-fit:contain}
+.picked .pip svg{width:18px;height:18px}
+.picked .pip .emoji{font-size:18px;line-height:1}
+.picked .pip.more{background:var(--edu-midnight);color:#fff;font-size:12px;font-weight:800}
+.jobs-foot .btn.primary{font-size:18px;padding:12px 30px}
+
+/* ---------- Design your cards ---------- */
+#screen-design{overflow:hidden}
+.design-wrap{display:flex;height:100%}
+#sidebar{width:410px;min-width:410px;background:#fff;box-shadow:2px 0 20px rgba(29,42,68,.08);display:flex;flex-direction:column;height:100%;position:relative;z-index:2}
+#panels{flex:1;overflow-y:auto;padding:4px 22px 20px}
+section.panel{padding:20px 0;border-bottom:1.5px solid var(--line)}
+section.panel:last-child{border-bottom:0}
+.panel h2{display:flex;align-items:center;gap:10px;font-family:var(--font-slab);font-size:20px;font-weight:700;margin-bottom:14px;color:var(--edu-midnight)}
+.panel h2 .n{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:13px;font-weight:800;color:var(--edu-midnight);background:var(--edu-sunshine);flex:0 0 auto}
+.panel:nth-child(2) h2 .n{background:var(--edu-pink)}
+.panel:nth-child(3) h2 .n{background:var(--edu-light-green)}
+.panel:nth-child(4) h2 .n{background:var(--edu-tech)}
+.panel h2 .btn{margin-left:auto}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--edu-light-grey);margin-bottom:5px}
+.field input[type=text],.field textarea{width:100%;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:#fff;font-weight:600}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--edu-pacific)}
+.row{display:flex;gap:10px}
+.row .field{flex:1}
+.tip{font-size:12.5px;color:var(--edu-light-grey);line-height:1.5;margin-top:10px}
+.tip a{color:var(--edu-pacific)}
+
+/* look swatches: little cards */
+.swatches{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.swatch{border:2.5px solid transparent;border-radius:14px;padding:0;overflow:hidden;background:#fff;text-align:left;box-shadow:var(--shadow-card);transition:transform .15s,box-shadow .15s;position:relative}
+.swatch:hover{transform:translateY(-2px);box-shadow:var(--shadow-pop)}
+.swatch.active{border-color:var(--edu-midnight)}
+.swatch.active::after{content:"✓";position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:var(--edu-midnight);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.sw-prev{height:62px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;position:relative;overflow:hidden;line-height:1}
+.sw-prev .bar{position:absolute;left:0;right:0;top:0;height:7px}
+.sw-prev .dot{position:absolute;width:44px;height:44px;border-radius:50%;right:-14px;bottom:-16px;opacity:.55}
+.sw-name{font-size:11px;padding:6px 8px;font-weight:700;color:var(--edu-midnight);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#fff;border-top:1px solid var(--line)}
+
+.seg{display:flex;gap:8px}
+.seg button{flex:1;border:2px solid var(--line);background:#fff;padding:10px 6px;border-radius:14px;font-size:14px;font-weight:700;color:var(--edu-midnight);line-height:1.2}
+.seg button small{display:block;font-weight:600;font-size:11.5px;color:var(--edu-light-grey);margin-top:2px}
+.seg button:hover{border-color:var(--edu-midnight)}
+.seg button.active{background:var(--edu-midnight);border-color:var(--edu-midnight);color:#fff}
+.seg button.active small{color:rgba(255,255,255,.7)}
+.check{display:flex;align-items:center;gap:10px;font-size:14.5px;margin:9px 0;cursor:pointer;font-weight:500}
+.check input{width:18px;height:18px;accent-color:var(--edu-pacific)}
+
+/* selected jobs list */
+.job{display:grid;grid-template-columns:46px 1fr auto;gap:10px;align-items:center;padding:8px;border-radius:14px;background:var(--edu-cream);margin-bottom:8px}
+.job .ico{width:46px;height:46px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;box-shadow:var(--shadow-card)}
+.job .ico:hover{outline:2.5px solid var(--edu-pacific)}
+.job .ico svg{width:24px;height:24px}
+.job .ico img{width:72%;height:72%;object-fit:contain}
+.job .ico .emoji{font-size:24px;line-height:1}
+.job .name{font-weight:700;font-size:14.5px;line-height:1.2}
+.job .desc{font-size:12px;color:var(--edu-light-grey);line-height:1.3;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.job .actions{display:flex;gap:1px}
+.job .actions button{border:0;background:transparent;color:var(--edu-light-grey);padding:5px;border-radius:8px;display:flex}
+.job .actions button:hover{background:#fff;color:var(--edu-midnight)}
+.job .actions button:disabled{opacity:.25;cursor:default;background:none}
+.job .actions svg{width:16px;height:16px}
+.jobs-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+#sidebar footer{padding:14px 22px;border-top:1.5px solid var(--line);display:flex;gap:12px;align-items:center;background:#fff}
+#sidebar footer .btn.primary{flex:1;font-size:17px;padding:12px 20px}
+#count{font-size:13px;font-weight:700;color:var(--edu-light-grey);white-space:nowrap}
 
 /* preview area */
-#stage{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh}
-#zoombar{display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:8px 16px;border-bottom:1px solid var(--ui-border);background:var(--ui-panel);font-size:12px;color:var(--ui-muted)}
-#zoombar .zlabel{margin-right:auto;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:11px}
-#zoombar button{border:1px solid var(--ui-border);background:#fff;color:#374151;border-radius:6px;height:28px;min-width:28px;padding:0 8px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:700}
-#zoombar button:hover{background:#f3f4f6}
-#zoombar button:disabled{opacity:.4;cursor:default}
-#zoombar button.active{background:var(--ui-accent);color:#fff;border-color:var(--ui-accent)}
+#stage{flex:1;min-width:0;display:flex;flex-direction:column;height:100%}
+#zoombar{display:flex;align-items:center;gap:8px;padding:12px 22px 6px;font-size:13px;color:var(--edu-light-grey)}
+#zoombar .zlabel{margin-right:auto;font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:8px;min-width:0}
+#zoombar .zlabel svg{width:17px;height:17px;color:var(--edu-pacific)}
+#zoombar button{border:2px solid transparent;background:#fff;color:var(--edu-midnight);border-radius:99px;height:32px;min-width:32px;padding:0 10px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:13px;font-weight:700;box-shadow:var(--shadow-card)}
+#zoombar button:hover{background:var(--edu-midnight);color:#fff}
+#zoombar button:disabled{opacity:.4;cursor:default;background:#fff;color:var(--edu-midnight)}
+#zoombar button.active{background:var(--edu-midnight);color:#fff}
 #zoombar button svg{width:15px;height:15px}
-#zoombar .zpct{min-width:42px;text-align:center;font-variant-numeric:tabular-nums;color:#111}
-#preview{flex:1;min-height:0;overflow:auto;padding:20px 28px 40px;display:flex;flex-direction:row;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:20px;--pv-scale:.55}
-#preview .hint{color:var(--ui-muted);font-size:14px;text-align:center;max-width:420px;line-height:1.5;margin:60px auto 0}
+#zoombar .zpct{min-width:44px;text-align:center;font-variant-numeric:tabular-nums;font-weight:700;color:var(--edu-midnight)}
+#preview{flex:1;min-height:0;overflow:auto;padding:14px 28px 40px;display:flex;flex-direction:row;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:22px;--pv-scale:.55}
+#preview .hint{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-card);padding:34px 36px;text-align:center;max-width:440px;margin:60px auto 0;display:grid;gap:12px;justify-items:center}
+#preview .hint strong{font-family:var(--font-slab);font-size:26px}
+#preview .hint p{color:var(--edu-dark-grey);line-height:1.5}
 .sheet-wrap{width:calc(8.5in * var(--pv-scale));height:calc(11in * var(--pv-scale));flex-shrink:0}
-.sheet{width:8.5in;height:11in;background:#fff;box-shadow:0 6px 30px rgba(0,0,0,.14);position:relative;overflow:hidden;flex-shrink:0;transform:scale(var(--pv-scale));transform-origin:top left}
+.sheet{width:8.5in;height:11in;background:#fff;box-shadow:var(--shadow-pop);position:relative;overflow:hidden;flex-shrink:0;transform:scale(var(--pv-scale));transform-origin:top left;border-radius:calc(6px / var(--pv-scale))}
 .sheet.landscape{width:11in;height:8.5in}
 .sheet .grid{display:grid;width:100%;height:100%}
 .sheet.size-full .grid{grid-template-columns:1fr;grid-template-rows:1fr}
@@ -111,37 +263,71 @@ section.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;co
 .cutline{position:absolute;border:0;border-top:1px dashed #b7bcc4;left:0;right:0;pointer-events:none}
 .cutline.v{border-top:0;border-left:1px dashed #b7bcc4;top:0;bottom:0;left:50%}
 
-/* modal */
-.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:50}
+/* ---------- Modals ---------- */
+.modal-bg{position:fixed;inset:0;background:rgba(29,42,68,.45);display:none;align-items:center;justify-content:center;z-index:80;padding:16px}
 .modal-bg.open{display:flex}
-.modal{background:#fff;width:720px;max-width:95vw;max-height:88vh;border-radius:16px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.modal .mhead{padding:14px 18px;border-bottom:1px solid var(--ui-border);display:flex;align-items:center;gap:12px}
-.modal .mhead h3{margin:0;font-size:16px;flex:1}
-.modal .tabs{display:flex;gap:4px;padding:10px 18px 0}
-.modal .tabs button{border:0;background:transparent;padding:8px 12px;font-weight:700;font-size:13px;color:var(--ui-muted);border-bottom:2px solid transparent}
-.modal .tabs button.active{color:var(--ui-accent);border-color:var(--ui-accent)}
-.modal .mbody{padding:14px 18px;overflow:auto;flex:1}
-.modal .search{width:100%;padding:9px 12px;border:1px solid var(--ui-border);border-radius:8px;margin-bottom:12px}
-.icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}
-.icon-grid button{border:1px solid var(--ui-border);background:#fff;border-radius:10px;height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;color:var(--ui-muted);overflow:hidden;padding:4px}
-.icon-grid button:hover{border-color:var(--ui-accent);background:var(--ui-accent-soft)}
-.icon-grid button svg{width:26px;height:26px;color:var(--ui-text)}
+.modal{background:#fff;width:760px;max-width:100%;max-height:88vh;border-radius:22px;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-pop)}
+.modal .mhead{padding:18px 24px;border-bottom:1.5px solid var(--line);display:flex;align-items:center;gap:12px}
+.modal .mhead h3{margin:0;font-family:var(--font-slab);font-size:24px;font-weight:700;flex:1}
+.modal .tabs{display:flex;gap:6px;padding:14px 24px 0;flex-wrap:wrap}
+.modal .tabs button{border:0;background:var(--edu-cream);padding:8px 16px;border-radius:99px;font-weight:700;font-size:13.5px;color:var(--edu-light-grey)}
+.modal .tabs button:hover{color:var(--edu-midnight)}
+.modal .tabs button.active{background:var(--edu-midnight);color:#fff}
+.modal .mbody{padding:16px 24px 22px;overflow:auto;flex:1}
+.modal .search{max-width:none;margin-bottom:14px}
+.modal .search input{box-shadow:none;border-color:var(--line)}
+.icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:8px}
+.icon-grid button{border:2px solid transparent;background:var(--edu-cream);border-radius:14px;height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9.5px;color:var(--edu-light-grey);overflow:hidden;padding:4px;font-weight:600}
+.icon-grid button:hover{border-color:var(--edu-pacific);background:var(--tint-blue)}
+.icon-grid button svg{width:26px;height:26px;color:var(--edu-midnight)}
 .icon-grid button .emoji{font-size:30px;line-height:1}
-.icon-grid button img{width:34px;height:34px;object-fit:contain}
-.upload-box{border:2px dashed var(--ui-border);border-radius:14px;padding:36px;text-align:center;color:var(--ui-muted)}
+.icon-grid button img{width:36px;height:36px;object-fit:contain}
+.upload-box{border:2.5px dashed var(--edu-pacific);background:var(--tint-blue);border-radius:var(--radius);padding:36px;text-align:center;color:var(--edu-dark-grey);display:block;cursor:pointer;line-height:1.5}
+.upload-box:hover{background:#fff}
+.upload-box svg{color:var(--edu-pacific)}
 .upload-box input{display:none}
-.tip{font-size:12px;color:var(--ui-muted);line-height:1.5;margin-top:10px}
-.tip a{color:var(--ui-accent)}
+.modal .field textarea{min-height:90px;resize:vertical}
+.modal .mfoot{padding:14px 24px;border-top:1.5px solid var(--line);display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.modal .mfoot .btn.primary{font-size:16px;padding:10px 26px}
+.btn.danger{color:#B3310C;border-color:transparent;background:#FFE9E0}
+.btn.danger:hover{background:#B3310C;color:#fff}
+.export-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.export-opt{border:0;border-top:7px solid var(--edu-tech);border-radius:var(--radius);padding:20px 18px 22px;background:var(--edu-cream);text-align:left;color:var(--edu-midnight);display:flex;flex-direction:column;gap:9px;cursor:pointer;transition:transform .13s,box-shadow .13s}
+.export-opt:nth-child(2){border-top-color:var(--edu-light-purple)}
+.export-opt:nth-child(3){border-top-color:var(--edu-light-green)}
+.export-opt:hover{transform:translateY(-3px);box-shadow:var(--shadow-pop);background:#fff}
+.export-opt .eo-ico{width:50px;height:50px;border-radius:50%;background:#fff;color:var(--edu-midnight);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-card)}
+.export-opt .eo-ico svg{width:24px;height:24px}
+.export-opt strong{font-family:var(--font-slab);font-size:21px}
+.export-opt span{font-size:13px;color:var(--edu-dark-grey);line-height:1.5}
+.export-opt:disabled{opacity:.6;cursor:progress}
 
-/* edit modal */
-.modal .field textarea{width:100%;min-height:90px;padding:8px 10px;border:1px solid var(--ui-border);border-radius:8px;resize:vertical}
-.modal .mfoot{padding:12px 18px;border-top:1px solid var(--ui-border);display:flex;justify-content:flex-end;gap:8px}
+/* ---------- Slideshow ---------- */
+#show{display:none;position:fixed;inset:0;z-index:90;background:var(--edu-midnight);flex-direction:column;align-items:center;justify-content:center}
+#show.open{display:flex}
+#show .stage{position:relative;width:calc(11in * var(--ss,1));height:calc(8.5in * var(--ss,1))}
+#show .sheet{width:11in;height:8.5in;transform:scale(var(--ss,1));transform-origin:top left;box-shadow:0 20px 60px rgba(0,0,0,.4);border-radius:0}
+#show .sheet .grid{grid-template-columns:1fr;grid-template-rows:1fr}
+#show .card{padding:.6in 1.2in}
+#show .card .art .chip{width:3in;height:3in}
+#show .card .art img{width:3in;height:3in}
+#show .card .art .emoji{font-size:2in}
+#show .card .toolbar{display:none}
+#show .card [contenteditable]{pointer-events:none;outline:none}
+#show .card .art{pointer-events:none}
+#show .ss-bar{position:fixed;left:0;right:0;bottom:0;padding:14px 18px;display:flex;align-items:center;justify-content:center;gap:10px;color:#fff;font-size:13px;background:linear-gradient(transparent,rgba(0,0,0,.35))}
+#show .ss-bar button{border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;border-radius:99px;height:38px;min-width:38px;padding:0 14px;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:700;font-size:13px}
+#show .ss-bar button:hover{background:#fff;color:var(--edu-midnight)}
+#show .ss-bar button svg{width:18px;height:18px}
+#show .ss-bar .ss-count{min-width:70px;text-align:center;font-variant-numeric:tabular-nums;font-weight:700}
+#show .ss-bar .ss-exit{margin-left:18px}
+#show .ss-hint{position:fixed;top:14px;right:18px;color:rgba(255,255,255,.6);font-size:12px}
 
-/* ============ CARD DESIGN (shared) ============ */
-.card{width:100%;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;text-align:center;
+/* ============ CARD DESIGN (shared by print, preview, slideshow) ============ */
+.card{width:100%;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;text-align:center;isolation:isolate;
   padding:0.45in 0.5in;background:var(--c-bg);color:var(--c-text);font-family:var(--c-body);
   -webkit-print-color-adjust:exact;print-color-adjust:exact}
-.card .cls{font-family:var(--c-head);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.85em;color:var(--c-accent);opacity:.95;position:relative}
+.card .cls{font-family:'Poppins',sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.85em;color:var(--c-accent);opacity:.95;position:relative}
 .card .year{font-size:.7em;letter-spacing:.2em;opacity:.7;margin-top:2px;position:relative}
 .card .art{flex:0 0 auto;display:flex;align-items:center;justify-content:center;position:relative;margin:auto 0 .2in}
 .card .art .chip{border-radius:50%;background:var(--c-chip);display:flex;align-items:center;justify-content:center;color:var(--c-accent)}
@@ -153,7 +339,8 @@ section.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;co
 .card .desc{line-height:1.45;position:relative;max-width:90%;margin:0 auto auto}
 .card .assign{margin-top:auto;padding-top:.15in;font-size:.8em;opacity:.85;position:relative;width:80%}
 .card .assign span{display:block;border-bottom:1.5px solid var(--c-accent);height:1.3em;margin-top:.05in}
-.card .deco{position:absolute;pointer-events:none}
+.card .deco{position:absolute;pointer-events:none;z-index:-1}
+.card::before,.card::after{content:none;position:absolute;pointer-events:none;z-index:-1}
 
 /* size scaling: full sheet base, half & quarter scale down */
 .size-full .card{font-size:25px}
@@ -176,133 +363,70 @@ section.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;co
 .card.no-desc .desc,.card.no-desc .jd{display:none}
 
 /* ============ THEMES (Edutopia palette) ============ */
-/* Fonts: Poppins (Gotham stand-in), Zilla Slab (Museo Slab stand-in), Caveat (Helping Hand stand-in) */
-/* 1 Edutopia Orange */
-.t-edu{--c-bg:#fff;--c-text:#1D2A44;--c-title:#1D2A44;--c-accent:#FF4C00;--c-chip:#FFF7ED;--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
-.t-edu .deco.a{top:0;left:0;width:100%;height:.3in;background:#FF4C00}
+/* Fonts: Poppins (Gotham stand-in), Zilla Slab (Museo Slab stand-in), Caveat (Helping Hand stand-in).
+   Circle decorations are sized in em so they scale with the card's type size (full, half, quarter). */
+/* 1 Playful Circles: cream + flat corner circles, the look of the Edutopia site */
+.t-circles{--c-bg:#FFF7ED;--c-text:#1D2A44;--c-title:#0094C7;--c-accent:#004861;--c-chip:#fff;--c-head:'Zilla Slab',serif;--c-body:'Poppins',sans-serif}
+.t-circles .deco.a{width:9em;height:9em;border-radius:50%;background:#FFBC0D;top:-3.6em;left:-3.6em}
+.t-circles .deco.b{width:6.5em;height:6.5em;border-radius:50%;background:#4FD2FF;top:-2.4em;right:-2.4em}
+.t-circles .deco.c{width:10em;height:10em;border-radius:50%;background:#A973DF;bottom:-4.2em;right:-4.2em}
+.t-circles::after{content:"";width:6em;height:6em;border-radius:50%;background:#2AD2C9;bottom:-2.2em;left:-2.2em}
+/* 2 Edutopia Orange */
+.t-edu{--c-bg:#fff;--c-text:#1D2A44;--c-title:#1D2A44;--c-accent:#FF4C00;--c-chip:#FFF7ED;--c-head:'Zilla Slab',serif;--c-body:'Poppins',sans-serif}
+.t-edu .deco.a{top:0;left:0;width:100%;height:.28in;background:#FF4C00}
 .t-edu .deco.b{bottom:.3in;left:15%;width:70%;height:2px;background:#FF4C00}
-.card.t-edu{padding-top:.7in}
-/* 2 Sunshine */
-.t-sunshine{--c-bg:#FFF7ED;--c-text:#1D2A44;--c-title:#FF780D;--c-accent:#FFBC0D;--c-chip:#fff;--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
-.t-sunshine .deco.a{width:3.2in;height:3.2in;border-radius:50%;background:#FFBC0D;top:-1.4in;right:-1.2in;opacity:.35}
-.t-sunshine .deco.b{width:2.2in;height:2.2in;border-radius:50%;background:#FF9B0D;bottom:-1in;left:-.8in;opacity:.25}
-/* 3 Tangerine Stripe */
+.sheet .card.t-edu{padding-top:.55in}
+/* 3 Palette Ribbon */
+.t-ribbon{--c-bg:#fff;--c-text:#1D2A44;--c-title:#1D2A44;--c-accent:#0094C7;--c-chip:#FFF7ED;--c-head:'Zilla Slab',serif;--c-body:'Poppins',sans-serif}
+.t-ribbon .deco.a,.t-ribbon .deco.b{left:0;width:100%;background:linear-gradient(90deg,#E75CAE 0 14.3%,#A973DF 0 28.6%,#0094C7 0 42.9%,#2AD2C9 0 57.2%,#6FB300 0 71.5%,#FFBC0D 0 85.8%,#FF9B0D 0)}
+.t-ribbon .deco.a{top:0;height:.28in}
+.t-ribbon .deco.b{bottom:0;height:.12in}
+.sheet .card.t-ribbon{padding-top:.55in}
+/* 4 Sunshine */
+.t-sunshine{--c-bg:#FFF7ED;--c-text:#1D2A44;--c-title:#FF780D;--c-accent:#FFBC0D;--c-chip:#fff;--c-head:'Zilla Slab',serif;--c-body:'Poppins',sans-serif}
+.t-sunshine .deco.a{width:11em;height:11em;border-radius:50%;background:#FFBC0D;top:-4.5em;right:-4.5em;opacity:.4}
+.t-sunshine .deco.b{width:8em;height:8em;border-radius:50%;background:#FF9B0D;bottom:-3.2em;left:-3.2em;opacity:.3}
+/* 5 Tangerine Stripe */
 .t-stripe{--c-bg:#fff;--c-text:#1D2A44;--c-title:#1D2A44;--c-accent:#FF9B0D;--c-chip:rgba(255,155,13,.15);--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
 .t-stripe .deco.a{left:0;top:0;bottom:0;width:.3in;background:linear-gradient(180deg,#FF4C00 0 25%,#FF780D 25% 50%,#FF9B0D 50% 75%,#FFBC0D 75%)}
-.card.t-stripe{padding-left:.7in}
-/* 4 Midnight Blue */
-.t-midnight{--c-bg:#1D2A44;--c-text:#fff;--c-title:#fff;--c-accent:#FFBC0D;--c-chip:#004861;--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.sheet .card.t-stripe{padding-left:.6in}
+/* 6 Midnight Blue */
+.t-midnight{--c-bg:#1D2A44;--c-text:#fff;--c-title:#fff;--c-accent:#FFBC0D;--c-chip:#004861;--c-head:'Zilla Slab',serif;--c-body:'Poppins',sans-serif}
 .t-midnight .deco.a{inset:.2in;border:1px solid rgba(255,255,255,.35);border-radius:.15in}
-/* 5 Pacific Blue */
-.t-pacific{--c-bg:#fff;--c-text:#1D2A44;--c-title:#0094C7;--c-accent:#004861;--c-chip:rgba(79,210,255,.22);--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
+.t-midnight .deco.b{width:9em;height:9em;border-radius:50%;background:#0094C7;bottom:-3.6em;right:-3.2em;opacity:.35}
+/* 7 Pacific Blue */
+.t-pacific{--c-bg:#fff;--c-text:#1D2A44;--c-title:#0094C7;--c-accent:#004861;--c-chip:rgba(79,210,255,.22);--c-head:'Zilla Slab',serif;--c-body:'Poppins',sans-serif}
 .t-pacific .deco.a{inset:.18in;border:3px solid #0094C7;border-radius:.3in}
 .t-pacific .deco.b{width:100%;height:14%;bottom:0;left:0;background:radial-gradient(circle at 50% 130%,rgba(79,210,255,.35) 0 60%,transparent 61%)}
-/* 6 Teal */
+/* 8 Teal */
 .t-teal{--c-bg:#fff;--c-text:#1D2A44;--c-title:#00AFAB;--c-accent:#00AFAB;--c-chip:rgba(42,210,201,.2);--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
 .t-teal .deco.a{width:100%;height:.3in;top:0;left:0;background:repeating-linear-gradient(90deg,#00AFAB 0 .5in,#2AD2C9 .5in 1in)}
 .t-teal .deco.b{width:100%;height:.3in;bottom:0;left:0;background:repeating-linear-gradient(90deg,#2AD2C9 0 .5in,#00AFAB .5in 1in)}
-/* 7 Green */
+/* 9 Green */
 .t-green{--c-bg:#fff;--c-text:#1D2A44;--c-title:#6FB300;--c-accent:#6FB300;--c-chip:rgba(189,242,46,.35);--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
 .t-green .deco.a{inset:.14in;border:2px solid #6FB300;border-radius:.1in}
 .t-green .deco.b{inset:.22in;border:1px solid #BDF22E;border-radius:.06in}
-/* 8 Purple */
-.t-purple{--c-bg:#fff;--c-text:#1D2A44;--c-title:#532681;--c-accent:#A973DF;--c-chip:rgba(169,115,223,.18);--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
-.t-purple .deco.a{width:3in;height:3in;border-radius:50%;background:#A973DF;bottom:-1.3in;right:-1.2in;opacity:.3}
-.t-purple .deco.b{width:2in;height:2in;border-radius:50%;background:#532681;top:-.9in;left:-.8in;opacity:.15}
-/* 9 Pink */
+/* 10 Purple */
+.t-purple{--c-bg:#fff;--c-text:#1D2A44;--c-title:#532681;--c-accent:#A973DF;--c-chip:rgba(169,115,223,.18);--c-head:'Zilla Slab',serif;--c-body:'Poppins',sans-serif}
+.t-purple .deco.a{width:10em;height:10em;border-radius:50%;background:#A973DF;bottom:-4em;right:-4em;opacity:.35}
+.t-purple .deco.b{width:7em;height:7em;border-radius:50%;background:#532681;top:-2.6em;left:-2.6em;opacity:.15}
+/* 11 Pink */
 .t-pink{--c-bg:#fff;--c-text:#1D2A44;--c-title:#E75CAE;--c-accent:#F27179;--c-chip:rgba(242,113,121,.18);--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
 .t-pink .deco.a{inset:0;background-image:radial-gradient(circle,#E75CAE 3px,transparent 4px),radial-gradient(circle,#F27179 3px,transparent 4px),radial-gradient(circle,#FFBC0D 3px,transparent 4px);background-size:1.3in 1.3in,1.1in 1.1in,1.6in 1.6in;background-position:0 0,.4in .6in,.8in .2in;opacity:.35}
 .t-pink .deco.b{inset:.2in;border:3px solid #F27179;border-radius:.3in;background:rgba(255,255,255,.88)}
-/* 10 Editorial Slab */
+/* 12 Editorial Slab */
 .t-slab{--c-bg:#fff;--c-text:#333333;--c-title:#1D2A44;--c-accent:#FF4C00;--c-chip:#F2F2F0;--c-head:'Zilla Slab',serif;--c-body:'Poppins',sans-serif}
 .card.t-slab .title{font-size:3em;font-weight:700}
 .card.t-slab .cls{color:#333333;letter-spacing:.14em}
 .card.t-slab .jd{border-top:1px solid #333;border-bottom:1px solid #333;padding:.06in 0;display:inline-block;color:#333}
 .t-slab .deco.a{top:.32in;left:50%;width:.6in;height:3px;background:#FF4C00;transform:translateX(-50%)}
-/* 11 Handwritten */
+/* 13 Handwritten */
 .t-hand{--c-bg:#FFF7ED;--c-text:#333333;--c-title:#004861;--c-accent:#FF9B0D;--c-chip:#fff;--c-head:'Caveat',cursive;--c-body:'Poppins',sans-serif}
 .card.t-hand .title{font-size:3.3em;font-weight:700}
-.card.t-hand .cls{font-family:'Poppins',sans-serif}
 .t-hand .deco.a{inset:.22in;border:2px dashed #004861;border-radius:.2in;opacity:.5}
-/* 12 Clean & Simple */
+/* 14 Clean & Simple */
 .t-clean{--c-bg:#fff;--c-text:#333333;--c-title:#333333;--c-accent:#666666;--c-chip:#F2F2F0;--c-head:'Poppins',sans-serif;--c-body:'Poppins',sans-serif}
 .t-clean .deco.a{inset:.2in;border:2px solid #333}
-
-@media (max-width:900px){
-  body{flex-direction:column;height:auto;overflow:auto}
-  #sidebar{width:100%;min-width:0;height:auto;border-right:0;border-bottom:1px solid var(--ui-border)}
-  #sidebar footer{position:sticky;bottom:0;width:100%}
-  #panels{padding-bottom:16px}
-  #stage{height:auto}
-  #preview{padding:16px;overflow:visible}
-}
-/* ============ WELCOME SCREEN ============ */
-#welcome{display:none;position:fixed;inset:0;z-index:40;background:var(--ui-bg);overflow:auto}
-body.welcome #welcome{display:block}
-body.welcome #sidebar,body.welcome #stage{visibility:hidden}
-.w-inner{max-width:1040px;margin:0 auto;padding:36px 24px 120px}
-.w-head{display:flex;align-items:center;gap:18px;margin-bottom:18px}
-.w-head .bug{width:64px;height:64px;flex-shrink:0}
-.w-head h1{margin:0;font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
-.w-head p{margin:4px 0 0;font-size:14px;color:var(--ui-muted)}
-.w-intro{background:#fff;border:1px solid var(--ui-border);border-radius:14px;padding:18px 20px;font-size:16px;line-height:1.55;margin:0 0 22px;max-width:760px}
-.w-intro strong{color:var(--edu-space)}
-.w-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
-.w-tools input{flex:1;min-width:200px;padding:10px 12px;border:1px solid var(--ui-border);border-radius:10px;font-size:14px;background:#fff}
-.w-tools .btn{padding:9px 12px;font-size:13px}
-.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:8px}
-.tile{position:relative;display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:start;border:1.5px solid var(--ui-border);border-radius:12px;padding:12px;background:#fff;cursor:pointer;text-align:left;transition:.12s;font-family:inherit;color:var(--ui-text)}
-.tile:hover{border-color:var(--ui-accent)}
-.tile.on{border-color:var(--ui-accent);background:var(--ui-accent-soft);box-shadow:inset 0 0 0 1px var(--ui-accent)}
-.tile .ico{width:44px;height:44px;border-radius:10px;background:var(--edu-cream);display:flex;align-items:center;justify-content:center;color:var(--edu-space);overflow:hidden}
-.tile.on .ico{background:#fff}
-.tile .ico svg{width:26px;height:26px}
-.tile .ico img{width:100%;height:100%;object-fit:contain}
-.tile .ico .emoji{font-size:26px;line-height:1}
-.tile .name{font-weight:600;font-size:15px;line-height:1.25;padding-right:22px}
-.tile .desc{font-size:13px;color:var(--ui-muted);line-height:1.35;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.tile .tick{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ui-border);background:#fff;display:flex;align-items:center;justify-content:center;color:#fff}
-.tile .tick svg{width:13px;height:13px;display:none}
-.tile.on .tick{background:var(--ui-accent);border-color:var(--ui-accent)}
-.tile.on .tick svg{display:block}
-.w-foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--ui-border);padding:12px 24px;display:flex;justify-content:center}
-.w-foot .inner{width:100%;max-width:1040px;display:flex;align-items:center;gap:14px}
-.w-foot #wCount{font-size:13px;color:var(--ui-muted);margin-right:auto}
-.w-foot .btn.primary{padding:12px 22px;font-size:15px;border-radius:10px}
-.w-foot .btn.primary svg{width:18px;height:18px;vertical-align:-4px;margin-left:4px}
-@media (max-width:600px){ .w-head h1{font-size:24px} .w-head .bug{width:48px;height:48px} .w-inner{padding:20px 16px 110px} }
-
-/* ============ EXPORT CHOICES ============ */
-.export-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.export-opt{border:1.5px solid var(--ui-border);border-radius:14px;padding:18px 16px;background:#fff;text-align:left;font-family:inherit;color:var(--ui-text);display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:.12s}
-.export-opt:hover{border-color:var(--ui-accent);background:var(--ui-accent-soft)}
-.export-opt .eo-ico{width:44px;height:44px;border-radius:12px;background:var(--edu-cream);color:var(--edu-space);display:flex;align-items:center;justify-content:center}
-.export-opt .eo-ico svg{width:24px;height:24px}
-.export-opt strong{font-size:15px}
-.export-opt span{font-size:12px;color:var(--ui-muted);line-height:1.45}
-@media (max-width:700px){ .export-opts{grid-template-columns:1fr} }
-.export-opt:disabled{opacity:.6;cursor:progress}
-
-/* ============ SLIDESHOW ============ */
-#show{display:none;position:fixed;inset:0;z-index:60;background:#1D2A44;flex-direction:column;align-items:center;justify-content:center}
-#show.open{display:flex}
-#show .stage{position:relative;width:calc(11in * var(--ss,1));height:calc(8.5in * var(--ss,1))}
-#show .sheet{width:11in;height:8.5in;transform:scale(var(--ss,1));transform-origin:top left;box-shadow:0 20px 60px rgba(0,0,0,.4)}
-#show .sheet .grid{grid-template-columns:1fr;grid-template-rows:1fr}
-#show .card{padding:.6in 1.2in}
-#show .card .art .chip{width:3in;height:3in}
-#show .card .art img{width:3in;height:3in}
-#show .card .art .emoji{font-size:2in}
-#show .card .toolbar{display:none}
-#show .card [contenteditable]{pointer-events:none;outline:none}
-#show .card .art{pointer-events:none}
-#show .ss-bar{position:fixed;left:0;right:0;bottom:0;padding:12px 18px;display:flex;align-items:center;justify-content:center;gap:10px;color:#fff;font-size:13px;background:linear-gradient(transparent,rgba(0,0,0,.35))}
-#show .ss-bar button{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;border-radius:8px;height:36px;min-width:36px;padding:0 12px;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;font-weight:600;font-size:13px}
-#show .ss-bar button:hover{background:rgba(255,255,255,.22)}
-#show .ss-bar button svg{width:18px;height:18px}
-#show .ss-bar .ss-count{min-width:70px;text-align:center;font-variant-numeric:tabular-nums}
-#show .ss-bar .ss-exit{margin-left:18px}
-#show .ss-hint{position:fixed;top:14px;right:18px;color:rgba(255,255,255,.6);font-size:12px}
 
 /* ============ EDIT-IN-PLACE (screen only) ============ */
 .card [contenteditable]{cursor:text;border-radius:4px;outline:2px dashed transparent;outline-offset:3px;transition:outline-color .15s}
@@ -312,20 +436,46 @@ body.welcome #sidebar,body.welcome #stage{visibility:hidden}
 .card .art:hover{outline:2px dashed rgba(0,0,0,.3);outline-offset:6px}
 .card .toolbar{position:absolute;top:8px;right:8px;display:flex;gap:4px;opacity:0;transition:.15s;z-index:5;transform:scale(calc(1 / var(--pv-scale, 1)));transform-origin:top right}
 .card:hover .toolbar{opacity:1}
-.card .toolbar button{border:0;background:rgba(255,255,255,.95);color:#374151;border-radius:6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer}
-.card .toolbar button:hover{background:var(--ui-accent);color:#fff}
+.card .toolbar button{border:0;background:rgba(255,255,255,.95);color:var(--edu-midnight);border-radius:99px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 6px rgba(0,0,0,.22);cursor:pointer}
+.card .toolbar button:hover{background:var(--edu-midnight);color:#fff}
+.card .toolbar button:disabled{opacity:.35;cursor:default}
 .card .toolbar svg{width:15px;height:15px}
-.edit-hint{font-size:13px;color:var(--ui-muted);text-align:center;margin:0;width:100%}
+
+/* ---------- Responsive ---------- */
+@media (max-width:900px){
+  .brand-sub{display:none}
+  .step span.t{display:none}
+  .step{padding-right:6px}
+  .screen-inner{padding:24px 18px 50px}
+  #screen-design{overflow-y:auto}
+  .design-wrap{flex-direction:column;height:auto}
+  #sidebar{width:100%;min-width:0;height:auto;box-shadow:none}
+  #panels{overflow:visible}
+  #stage{height:auto}
+  #preview{padding:12px;overflow:visible}
+  .jobs-foot .count{font-size:14px}
+  .export-opts{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  h1.hero{font-size:46px}
+  .bug.big{width:64px;height:64px}
+  .steps{display:none}
+  .tiles{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+  .tile{min-height:170px;padding:14px}
+  .tile .pic{width:64px;height:64px}
+  .tile .name{font-size:19px}
+}
 
 /* ============ PRINT ============ */
 @page{size:letter portrait;margin:0}
 @media print{
   html,body{height:auto;overflow:visible;background:#fff;display:block}
-  #sidebar,#zoombar,#welcome,#show,.modal-bg,#preview .hint,.card .toolbar,.edit-hint{display:none !important}
-  body.welcome #stage{visibility:visible}
+  #appbar,#screen-welcome,#screen-jobs,#sidebar,#zoombar,#show,.modal-bg,#preview .hint,.card .toolbar{display:none !important}
+  #screen-design{display:block !important;position:static;overflow:visible;background:#fff}
+  .design-wrap{display:block;height:auto}
   #stage{display:block;height:auto}
   .sheet-wrap{width:auto;height:auto}
-  .sheet{transform:none}
+  .sheet{transform:none;border-radius:0}
   .card [contenteditable],.card .art{outline:none !important;background:transparent !important}
   #preview{padding:0;display:block;overflow:visible}
   .sheet{box-shadow:none;margin:0;page-break-after:always;break-after:page;width:8.5in;height:11in}
@@ -333,30 +483,135 @@ body.welcome #sidebar,body.welcome #stage{visibility:hidden}
 }
 </style>
 </head>
-<body class="welcome">
-<script>/* decide before first paint whether to show the start screen */
-try{ if((JSON.parse(localStorage.getItem('classJobsMaker.v1'))||{}).started) document.body.className=''; }catch(e){}</script>
+<body>
 
-<div id="welcome">
-  <div class="w-inner">
-    <div class="w-head">
-      <img class="bug" src="edu_bug.png" alt="Edutopia">
-      <div><h1>Class Jobs Maker</h1><p>Free, printable class job cards for your classroom.</p></div>
+<!-- ================= APP BAR ================= -->
+<header id="appbar">
+  <button class="brand" id="btn-home" title="Back to the welcome screen">
+    <img class="bug" src="edu_bug.png" alt="Edutopia">
+    <span><span class="brand-name">Class Jobs Maker</span><span class="brand-sub">An Edutopia Classroom Tool</span></span>
+  </button>
+  <div class="spacer"></div>
+  <nav class="steps" aria-label="Steps">
+    <button class="step" data-go="jobs"><span class="n">1</span><span class="t">Pick jobs</span></button>
+    <button class="step" data-go="design"><span class="n">2</span><span class="t">Design</span></button>
+    <button class="step" data-go="export"><span class="n">3</span><span class="t">Print or present</span></button>
+  </nav>
+</header>
+
+<!-- ================= WELCOME ================= -->
+<section class="screen active" id="screen-welcome">
+  <div class="screen-inner">
+    <img class="bug big" src="edu_bug.png" alt="Edutopia">
+    <div class="kicker">A Free Tool for Teachers</div>
+    <h1 class="hero">Class Jobs <span class="hl">Maker</span></h1>
+    <p class="hero-tag">Beautiful, printable job cards for your classroom in three easy steps. <strong>Pick the jobs</strong> you want from 50 ready-made ideas or add your own, <strong>choose a look</strong> built from the Edutopia palette, then <strong>print, save a PDF, or present</strong> them on the board.</p>
+    <div class="how-steps" aria-label="How it works">
+      <div class="how-step s1"><span class="how-ico"><i data-lucide="mouse-pointer-click"></i></span><span><b>1 · Pick your jobs</b><small>Tap the cards you want</small></span></div>
+      <div class="how-step s2"><span class="how-ico"><i data-lucide="palette"></i></span><span><b>2 · Choose a look</b><small>14 looks, edit any words or pictures</small></span></div>
+      <div class="how-step s3"><span class="how-ico"><i data-lucide="printer"></i></span><span><b>3 · Print or present</b><small>PDF, PowerPoint, or full screen</small></span></div>
     </div>
-    <p class="w-intro"><strong>Start by picking the jobs you want.</strong> Tap any job to add it. On the next screen you can choose a look, change any words or pictures, and then export your cards as a PDF or a slideshow. Nothing to sign in to. Your work saves in this browser.</p>
-    <div class="w-tools">
-      <input type="text" id="wSearch" placeholder="Search jobs...">
-      <button class="btn" id="wClassics">Pick the classics</button>
-      <button class="btn" id="wClear">Clear</button>
+    <div class="actions">
+      <button class="btn primary hidden" id="btn-continue">Continue →</button>
+      <button class="btn primary" id="btn-start">Pick Your Jobs →</button>
+      <button class="btn ghost hidden" id="btn-restart">Start Over</button>
+    </div>
+    <details class="teacher-guide">
+      <summary>Teacher's Quick Guide <span class="tg-sub">· how this works (1-minute read)</span></summary>
+      <div class="tg-body">
+        <p><b>What this is:</b> a free card maker. You pick classroom jobs, choose a look, and get print-ready cards on full sheets (1 per page), half sheets (2 per page), or quarter sheets (4 per page). Every look uses the Edutopia colors and prints cleanly.</p>
+        <p><b>Step 1, Pick your jobs:</b> tap any card to add it. <b>Pick the classics</b> grabs a ready-made set of favorites. Search for something specific, or add a <b>custom job</b> for anything not on the list. Tap the pencil on a card to change its name or description.</p>
+        <p><b>Step 2, Design:</b> type your class name and year, click a look, and choose a size. Click any words right on a card to retype them, click the picture to swap it for one of 150 pictures, 230 icons, 260 emoji, or your own image. Hover a card for buttons to reorder or remove it.</p>
+        <p><b>Step 3, Print or present:</b> <b>PDF</b> opens the print window (choose Save as PDF, and turn on "Background graphics" so the colors print). <b>Slideshow</b> downloads a PowerPoint file that also opens in Google Slides. <b>Present now</b> shows one job per slide full screen on your board.</p>
+        <p><b>Saving:</b> everything you do is saved in this browser on this device, so you can come back and change jobs at the start of a new term. There is nothing to sign in to. <b>Start Over</b> clears it all for a fresh class.</p>
+      </div>
+    </details>
+    <p class="foot-note">Nothing to sign in to · Nothing to install · Your work saves in this browser</p>
+  </div>
+</section>
+
+<!-- ================= STEP 1: PICK YOUR JOBS ================= -->
+<section class="screen" id="screen-jobs">
+  <div class="screen-inner">
+    <div class="page-head">
+      <h2>Pick Your Jobs</h2>
+      <p class="lede">Tap a card to add it to your set. <b>The classics</b> are a great place to start. Tap the pencil on any card to change its words.</p>
+    </div>
+    <div class="tools">
+      <label class="search"><i data-lucide="search"></i><input type="text" id="wSearch" placeholder="Search jobs…" aria-label="Search jobs"></label>
+      <button class="btn small soft" id="wClassics"><i data-lucide="sparkles"></i>Pick the classics</button>
+      <button class="btn small soft" id="wCustom"><i data-lucide="plus"></i>Custom job</button>
+      <button class="btn small ghost" id="wClear">Clear picks</button>
     </div>
     <div id="wGrid"></div>
   </div>
-  <div class="w-foot"><div class="inner">
-    <span id="wCount">Pick at least one job to continue</span>
-    <button class="btn primary" id="wGo" disabled>Make my cards<i data-lucide="arrow-right"></i></button>
+  <div class="jobs-foot"><div class="inner">
+    <div class="picked" id="wPicked"></div>
+    <span class="count" id="wCount">Pick at least one job to continue</span>
+    <button class="btn primary" id="wGo" disabled>Design My Cards <i data-lucide="arrow-right"></i></button>
   </div></div>
-</div>
+</section>
 
+<!-- ================= STEP 2: DESIGN ================= -->
+<section class="screen" id="screen-design">
+  <div class="design-wrap">
+  <aside id="sidebar">
+    <div id="panels">
+      <section class="panel">
+        <h2><span class="n">1</span>Your class</h2>
+        <div class="row">
+          <div class="field"><label for="className">Class name</label><input type="text" id="className" placeholder="Mr. Piercey's Class"></div>
+          <div class="field" style="flex:0 0 120px"><label for="classYear">Year</label><input type="text" id="classYear" placeholder="2026-27"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2><span class="n">2</span>Choose a look</h2>
+        <div class="swatches" id="swatches"></div>
+      </section>
+
+      <section class="panel">
+        <h2><span class="n">3</span>Card size</h2>
+        <div class="seg" id="sizeSeg">
+          <button data-size="full">Full sheet<small>1 per page</small></button>
+          <button data-size="half">Half sheet<small>2 per page</small></button>
+          <button data-size="quarter">Quarter<small>4 per page</small></button>
+        </div>
+        <label class="check" style="margin-top:12px"><input type="checkbox" id="showDesc" checked> Show job descriptions</label>
+        <label class="check"><input type="checkbox" id="showAssign"> Add an "Assigned to" line</label>
+        <label class="check"><input type="checkbox" id="showCut" checked> Show cut lines on screen (they don't print)</label>
+      </section>
+
+      <section class="panel">
+        <h2><span class="n">4</span>Your jobs <button class="btn small soft" data-go="jobs"><i data-lucide="plus"></i>Add or remove</button></h2>
+        <div id="jobList"></div>
+        <p class="tip">Click a picture to swap it, the pencil to edit the words, and the arrows to change the order.</p>
+        <div class="jobs-tools">
+          <button class="btn small ghost" id="addCustom"><i data-lucide="plus"></i>Custom job</button>
+          <button class="btn small ghost" id="resetAll"><i data-lucide="rotate-ccw"></i>Start over</button>
+        </div>
+      </section>
+    </div>
+    <footer>
+      <span id="count">0 jobs</span>
+      <button class="btn primary" id="exportBtn"><i data-lucide="printer"></i> Print or Present</button>
+    </footer>
+  </aside>
+
+  <main id="stage">
+    <div id="zoombar">
+      <span class="zlabel"><i data-lucide="mouse-pointer-click"></i><span>Click any words on a card to change them. Click a picture to swap it.</span></span>
+      <button id="zoomOut" title="Smaller"><i data-lucide="zoom-out"></i></button>
+      <span class="zpct" id="zoomPct">55%</span>
+      <button id="zoomIn" title="Larger"><i data-lucide="zoom-in"></i></button>
+      <button id="zoomFit" title="Fit one whole page on screen"><i data-lucide="maximize"></i>Fit</button>
+    </div>
+    <div id="preview"></div>
+  </main>
+  </div>
+</section>
+
+<!-- ================= SLIDESHOW ================= -->
 <div id="show" aria-label="Slideshow">
   <div class="ss-hint">Arrow keys to move. Esc to exit.</div>
   <div class="stage" id="ssStage"></div>
@@ -369,76 +624,10 @@ try{ if((JSON.parse(localStorage.getItem('classJobsMaker.v1'))||{}).started) doc
   </div>
 </div>
 
-<aside id="sidebar">
-  <header>
-    <img class="bug" src="edu_bug.png" alt="Edutopia">
-    <h1>Class Jobs Maker</h1>
-    <p>Your work saves in this browser. <button id="backToWelcome" type="button">Back to the start screen</button></p>
-  </header>
-
-  <div id="panels">
-    <section class="panel">
-      <h2>1. Your class</h2>
-      <div class="row">
-        <div class="field"><label>Class name</label><input type="text" id="className" placeholder="Mr. Piercey's Class"></div>
-        <div class="field" style="flex:0 0 110px"><label>Year</label><input type="text" id="classYear" placeholder="2026-27"></div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>2. Choose a look</h2>
-      <div class="swatches" id="swatches"></div>
-    </section>
-
-    <section class="panel">
-      <h2>3. Print size</h2>
-      <div class="seg" id="sizeSeg">
-        <button data-size="full">Full sheet<br><small>1 per page</small></button>
-        <button data-size="half">Half sheet<br><small>2 per page</small></button>
-        <button data-size="quarter">Quarter<br><small>4 per page</small></button>
-      </div>
-      <label class="check" style="margin-top:10px"><input type="checkbox" id="showDesc" checked> Show job descriptions</label>
-      <label class="check"><input type="checkbox" id="showAssign"> Add an "Assigned to" line</label>
-      <label class="check"><input type="checkbox" id="showCut" checked> Show cut lines on screen (they don't print)</label>
-    </section>
-
-    <section class="panel">
-      <h2>4. Pick your jobs</h2>
-      <div class="jobs-tools">
-        <input type="text" id="jobSearch" placeholder="Search jobs...">
-        <button class="btn" id="addCustom">+ Custom job</button>
-      </div>
-      <div class="jobs-tools">
-        <button class="btn small" id="selectFeatured">Select the classics</button>
-        <button class="btn small" id="clearAll">Clear all</button>
-        <button class="btn small" id="resetAll">Reset everything</button>
-      </div>
-      <p class="tip" style="margin:0 0 6px">Click any icon to change it. Click the pencil to edit a job's name or description.</p>
-      <div id="jobList"></div>
-    </section>
-  </div>
-
-  <footer>
-    <span id="count">0 jobs</span>
-    <button class="btn primary" id="exportBtn"><i data-lucide="download" style="width:16px;height:16px;vertical-align:-3px"></i> Export</button>
-  </footer>
-</aside>
-
-<main id="stage">
-  <div id="zoombar">
-    <span class="zlabel">Preview size</span>
-    <button id="zoomOut" title="Smaller"><i data-lucide="zoom-out"></i></button>
-    <span class="zpct" id="zoomPct">55%</span>
-    <button id="zoomIn" title="Larger"><i data-lucide="zoom-in"></i></button>
-    <button id="zoomFit" title="Fit one whole page on screen"><i data-lucide="maximize"></i>Fit</button>
-  </div>
-  <div id="preview"></div>
-</main>
-
 <!-- Icon picker -->
 <div class="modal-bg" id="iconModal">
   <div class="modal">
-    <div class="mhead"><h3>Choose a picture</h3><button class="btn" data-close>Close</button></div>
+    <div class="mhead"><h3>Choose a picture</h3><button class="btn small ghost" data-close>Close</button></div>
     <div class="tabs">
       <button class="active" data-tab="pictures">Pictures</button>
       <button data-tab="icons">Icons</button>
@@ -447,27 +636,27 @@ try{ if((JSON.parse(localStorage.getItem('classJobsMaker.v1'))||{}).started) doc
     </div>
     <div class="mbody">
       <div data-pane="pictures">
-        <input class="search" id="omSearch" placeholder="Search pictures (try: book, plant, music, robot)...">
+        <label class="search"><i data-lucide="search"></i><input id="omSearch" placeholder="Search pictures (try: book, plant, music, robot)…"></label>
         <div class="icon-grid" id="omGrid"></div>
-        <p class="tip">Pictures by <a href="https://openmoji.org" target="_blank">OpenMoji</a>, the open-source emoji and icon project (CC BY-SA 4.0). They print the same on every computer.</p>
+        <p class="tip">Pictures by <a href="https://openmoji.org" target="_blank" rel="noopener">OpenMoji</a>, the open-source emoji and icon project (CC BY-SA 4.0). They print the same on every computer.</p>
       </div>
       <div data-pane="icons" style="display:none">
-        <input class="search" id="iconSearch" placeholder="Search icons (try: book, plant, music, robot)...">
+        <label class="search"><i data-lucide="search"></i><input id="iconSearch" placeholder="Search icons (try: book, plant, music, robot)…"></label>
         <div class="icon-grid" id="iconGrid"></div>
-        <p class="tip">Icons from <a href="https://lucide.dev" target="_blank">Lucide</a> (free, open source).</p>
+        <p class="tip">Icons from <a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a> (free, open source).</p>
       </div>
       <div data-pane="emoji" style="display:none">
-        <input class="search" id="emojiSearch" placeholder="Search emoji (try: dog, star, pizza)...">
+        <label class="search"><i data-lucide="search"></i><input id="emojiSearch" placeholder="Search emoji (try: dog, star, pizza)…"></label>
         <div class="icon-grid" id="emojiGrid"></div>
         <p class="tip">Emoji print using your computer's built-in emoji font, so they may look a little different on another computer.</p>
       </div>
       <div data-pane="upload" style="display:none">
         <label class="upload-box">
-          <div><i data-lucide="image-plus" style="width:36px;height:36px"></i></div>
+          <div><i data-lucide="image-plus" style="width:40px;height:40px"></i></div>
           <strong>Click to choose an image</strong><br>PNG, JPG, GIF or SVG. Pictures with a see-through background look best.
           <input type="file" id="uploadInput" accept="image/*">
         </label>
-        <p class="tip">Need free pictures? Try <a href="https://openmoji.org" target="_blank">OpenMoji</a>, <a href="https://www.svgrepo.com" target="_blank">SVG Repo</a>, <a href="https://undraw.co/illustrations" target="_blank">unDraw</a>, <a href="https://www.flaticon.com" target="_blank">Flaticon</a>, or <a href="https://openclipart.org" target="_blank">Openclipart</a>. Uploaded pictures stay in your browser only.</p>
+        <p class="tip">Need free pictures? Try <a href="https://openmoji.org" target="_blank" rel="noopener">OpenMoji</a>, <a href="https://www.svgrepo.com" target="_blank" rel="noopener">SVG Repo</a>, <a href="https://undraw.co/illustrations" target="_blank" rel="noopener">unDraw</a>, <a href="https://www.flaticon.com" target="_blank" rel="noopener">Flaticon</a>, or <a href="https://openclipart.org" target="_blank" rel="noopener">Openclipart</a>. Uploaded pictures stay in your browser only.</p>
       </div>
     </div>
   </div>
@@ -475,18 +664,18 @@ try{ if((JSON.parse(localStorage.getItem('classJobsMaker.v1'))||{}).started) doc
 
 <!-- Export modal -->
 <div class="modal-bg" id="exportModal">
-  <div class="modal" style="width:760px">
-    <div class="mhead"><h3>5. Export your cards</h3><button class="btn" data-close>Close</button></div>
+  <div class="modal" style="width:820px">
+    <div class="mhead"><h3>Print or present your cards</h3><button class="btn small ghost" data-close>Close</button></div>
     <div class="mbody">
       <div class="export-opts">
         <button type="button" class="export-opt" id="exportPdf">
           <div class="eo-ico"><i data-lucide="file-text"></i></div>
-          <strong>PDF</strong>
+          <strong>PDF or Print</strong>
           <span>Opens the print window. Choose <b>Save as PDF</b> as the printer, or send it straight to a printer. Turn on "Background graphics" so the colors print.</span>
         </button>
         <button type="button" class="export-opt" id="exportPptx">
           <div class="eo-ico"><i data-lucide="presentation"></i></div>
-          <strong>Slideshow</strong>
+          <strong>Slideshow file</strong>
           <span>Downloads a PowerPoint file with one job per slide in your chosen look. Open it in PowerPoint, or upload it to Google Drive and open it with <b>Google Slides</b>.</span>
         </button>
         <button type="button" class="export-opt" id="exportShow">
@@ -502,31 +691,37 @@ try{ if((JSON.parse(localStorage.getItem('classJobsMaker.v1'))||{}).started) doc
 
 <!-- Edit job modal -->
 <div class="modal-bg" id="editModal">
-  <div class="modal" style="width:480px">
-    <div class="mhead"><h3 id="editTitle">Edit job</h3><button class="btn" data-close>Close</button></div>
+  <div class="modal" style="width:500px">
+    <div class="mhead"><h3 id="editTitle">Edit job</h3><button class="btn small ghost" data-close>Close</button></div>
     <div class="mbody">
-      <div class="field"><label>Job title</label><input type="text" id="editName"></div>
-      <div class="field"><label>Job description</label><textarea id="editDesc"></textarea></div>
+      <div class="field"><label for="editName">Job title</label><input type="text" id="editName"></div>
+      <div class="field"><label for="editDesc">Job description</label><textarea id="editDesc"></textarea></div>
     </div>
-    <div class="mfoot"><button class="btn" id="editDelete" style="margin-right:auto;color:#B3310C">Delete job</button><button class="btn primary" id="editSave">Save</button></div>
+    <div class="mfoot">
+      <button class="btn small danger" id="editDelete" style="margin-right:auto"><i data-lucide="trash-2"></i>Delete job</button>
+      <button class="btn small ghost" id="editPic"><i data-lucide="image"></i>Change picture</button>
+      <button class="btn primary" id="editSave">Save</button>
+    </div>
   </div>
 </div>
-
 <script>
 /* ================= DATA ================= */
+// bg/fg/dot color the little swatch cards; font is the card title font
 const THEMES = [
-  {id:'edu',      name:'Edutopia Orange', bg:'#ffffff', fg:'#FF4C00'},
-  {id:'sunshine', name:'Sunshine',        bg:'#FFF7ED', fg:'#FF780D'},
-  {id:'stripe',   name:'Tangerine Stripe',bg:'#ffffff', fg:'#FF9B0D'},
-  {id:'midnight', name:'Midnight Blue',   bg:'#1D2A44', fg:'#FFBC0D'},
-  {id:'pacific',  name:'Pacific Blue',    bg:'#ffffff', fg:'#0094C7'},
-  {id:'teal',     name:'Teal',            bg:'#ffffff', fg:'#00AFAB'},
-  {id:'green',    name:'Green',           bg:'#ffffff', fg:'#6FB300'},
-  {id:'purple',   name:'Purple',          bg:'#ffffff', fg:'#532681'},
-  {id:'pink',     name:'Pink',            bg:'#ffffff', fg:'#E75CAE'},
-  {id:'slab',     name:'Editorial Slab',  bg:'#ffffff', fg:'#1D2A44'},
-  {id:'hand',     name:'Handwritten',     bg:'#FFF7ED', fg:'#004861'},
-  {id:'clean',    name:'Clean & Simple',  bg:'#ffffff', fg:'#333333'},
+  {id:'circles',  name:'Playful Circles', bg:'#FFF7ED', fg:'#0094C7', dot:'#FFBC0D', font:'Zilla Slab'},
+  {id:'edu',      name:'Edutopia Orange', bg:'#ffffff', fg:'#1D2A44', bar:'#FF4C00', font:'Zilla Slab'},
+  {id:'ribbon',   name:'Palette Ribbon',  bg:'#ffffff', fg:'#1D2A44', bar:'linear-gradient(90deg,#E75CAE 0 14.3%,#A973DF 0 28.6%,#0094C7 0 42.9%,#2AD2C9 0 57.2%,#6FB300 0 71.5%,#FFBC0D 0 85.8%,#FF9B0D 0)', font:'Zilla Slab'},
+  {id:'sunshine', name:'Sunshine',        bg:'#FFF7ED', fg:'#FF780D', dot:'#FFBC0D', font:'Zilla Slab'},
+  {id:'stripe',   name:'Tangerine Stripe',bg:'#ffffff', fg:'#1D2A44', bar:'#FF9B0D', font:'Poppins'},
+  {id:'midnight', name:'Midnight Blue',   bg:'#1D2A44', fg:'#ffffff', dot:'#0094C7', font:'Zilla Slab'},
+  {id:'pacific',  name:'Pacific Blue',    bg:'#ffffff', fg:'#0094C7', bar:'#0094C7', font:'Zilla Slab'},
+  {id:'teal',     name:'Teal',            bg:'#ffffff', fg:'#00AFAB', bar:'#2AD2C9', font:'Poppins'},
+  {id:'green',    name:'Green',           bg:'#ffffff', fg:'#6FB300', bar:'#BDF22E', font:'Poppins'},
+  {id:'purple',   name:'Purple',          bg:'#ffffff', fg:'#532681', dot:'#A973DF', font:'Zilla Slab'},
+  {id:'pink',     name:'Pink',            bg:'#ffffff', fg:'#E75CAE', dot:'#F27179', font:'Poppins'},
+  {id:'slab',     name:'Editorial Slab',  bg:'#ffffff', fg:'#1D2A44', bar:'#FF4C00', font:'Zilla Slab'},
+  {id:'hand',     name:'Handwritten',     bg:'#FFF7ED', fg:'#004861', font:'Caveat'},
+  {id:'clean',    name:'Clean & Simple',  bg:'#ffffff', fg:'#333333', bar:'#333333', font:'Poppins'},
 ];
 
 // featured = the classics that show up first. 50 jobs total. The 4th column is the OpenMoji hexcode (see openmoji/).
@@ -763,7 +958,7 @@ const FEATURED_IDS = JOBS.filter(j=>j.featured).map(j=>j.id);
 /* ================= STATE ================= */
 const STORAGE_KEY = 'classJobsMaker.v1';
 let state = {
-  className:'', classYear:'', theme:'edu', size:'half',
+  className:'', classYear:'', theme:'circles', size:'half',
   showDesc:true, showAssign:false, showCut:true,
   tagline:null,           // header line 2; null = auto from year
   jdLabel:'Job Description',
@@ -773,7 +968,7 @@ let state = {
 };
 function load(){ let s=null; try{ s=JSON.parse(localStorage.getItem(STORAGE_KEY)); }catch(e){}
   if(s) state={...state,...s};
-  if(!THEMES.some(t=>t.id===state.theme)) state.theme='edu'; }
+  if(!THEMES.some(t=>t.id===state.theme)) state.theme='circles'; }
 function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ /* likely a huge uploaded image */ } }
 function allJobs(){
   const base = JOBS.map(j=>({...j, ...(state.overrides[j.id]||{})}));
@@ -783,7 +978,7 @@ function getJob(id){ return allJobs().find(j=>j.id===id); }
 function setJob(id, patch){
   const c = state.custom.find(x=>x.id===id);
   if(c){ Object.assign(c,patch); } else { state.overrides[id] = {...(state.overrides[id]||{}), ...patch}; }
-  save(); renderJobs(); renderPreview();
+  save(); renderJobs(); renderPreview(); renderTiles();
 }
 
 /* ================= RENDER: SIDEBAR ================= */
@@ -799,27 +994,30 @@ function iconHTML(icon){
 function renderSwatches(){
   $('#swatches').innerHTML = THEMES.map(t=>`
     <button class="swatch ${state.theme===t.id?'active':''}" data-theme="${t.id}" title="${t.name}">
-      <div class="sw-prev" style="background:${t.bg};color:${t.fg}">Aa</div>
+      <div class="sw-prev" style="background:${t.bg};color:${t.fg};font-family:'${t.font}'">${t.bar?`<span class="bar" style="background:${t.bar}"></span>`:''}${t.dot?`<span class="dot" style="background:${t.dot}"></span>`:''}Aa</div>
       <div class="sw-name">${t.name}</div></button>`).join('');
 }
 function renderJobs(){
-  const q = ($('#jobSearch').value||'').toLowerCase();
-  const jobs = allJobs().filter(j=>!q || (j.name+' '+j.desc).toLowerCase().includes(q));
-  const groups = [
-    ['Your custom jobs', jobs.filter(j=>j.custom)],
-    ['The classics', jobs.filter(j=>j.featured)],
-    ['More ideas', jobs.filter(j=>!j.featured && !j.custom)],
-  ];
-  $('#jobList').innerHTML = groups.filter(g=>g[1].length).map(([title,list])=>`
-    <div class="job-group-title">${title}</div>` + list.map(j=>`
-    <div class="job ${state.selected.includes(j.id)?'selected':''}" data-id="${j.id}">
-      <input type="checkbox" ${state.selected.includes(j.id)?'checked':''} data-toggle>
+  const ids = state.selected.filter(id=>getJob(id));
+  $('#jobList').innerHTML = ids.map((id,i)=>{ const j=getJob(id); return `
+    <div class="job" data-id="${id}">
       <div class="ico" data-pick title="Change picture">${iconHTML(j.icon)}</div>
       <div><div class="name">${esc(j.name)}</div><div class="desc">${esc(j.desc)}</div></div>
-      <div class="actions"><button data-edit title="Edit"><i data-lucide="pencil"></i></button></div>
-    </div>`).join('')).join('');
+      <div class="actions">
+        <button data-act="up" title="Move up" ${i===0?'disabled':''}><i data-lucide="arrow-up"></i></button>
+        <button data-act="down" title="Move down" ${i===ids.length-1?'disabled':''}><i data-lucide="arrow-down"></i></button>
+        <button data-edit title="Edit the words"><i data-lucide="pencil"></i></button>
+        <button data-act="remove" title="Remove"><i data-lucide="x"></i></button>
+      </div>
+    </div>`; }).join('') || `<p class="tip" style="margin:0">No jobs picked yet. Use <b>Add or remove</b> above.</p>`;
   lucide.createIcons();
-  $('#count').textContent = `${state.selected.length} job${state.selected.length===1?'':'s'} selected`;
+  $('#count').textContent = `${ids.length} job${ids.length===1?'':'s'}`;
+}
+function move(id, act){
+  const i = state.selected.indexOf(id); if(i<0) return;
+  if(act==='remove') return toggle(id,false);
+  const k = act==='up' ? i-1 : i+1; if(k<0 || k>=state.selected.length) return;
+  [state.selected[i],state.selected[k]]=[state.selected[k],state.selected[i]]; save(); renderJobs(); renderPreview();
 }
 function esc(s){ return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
@@ -846,36 +1044,71 @@ function cardHTML(id, idx, total){
         </div>`;
 }
 
+/* ================= SCREENS ================= */
+function go(screen){
+  if(screen==='export'){ if(document.body.dataset.screen!=='design') go('design'); return openExport(); }
+  if(screen==='design' && !state.selected.length) screen='jobs';
+  document.body.dataset.screen = screen;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active', s.id==='screen-'+screen));
+  const cur = ['jobs','design','export'].indexOf(screen);
+  document.querySelectorAll('.step').forEach((b,i)=>{ b.classList.toggle('on', i===cur); b.classList.toggle('past', cur>=0 && i<cur); });
+  if(screen==='welcome') renderWelcome();
+  if(screen==='jobs') renderTiles();
+  if(screen==='design'){ renderJobs(); renderPreview(); applyZoom(); }
+  const el=$('#screen-'+screen); if(el) el.scrollTop=0;
+}
+function openExport(){ if(!state.selected.length) return alert('Pick at least one job first.'); $('#exportModal').classList.add('open'); }
+
 /* ================= RENDER: WELCOME ================= */
 function renderWelcome(){
-  if(!document.body.classList.contains('welcome')) return;
+  const n = state.selected.length;
+  $('#btn-continue').classList.toggle('hidden', !n);
+  $('#btn-restart').classList.toggle('hidden', !n);
+  $('#btn-continue').textContent = `Continue: ${n} job${n===1?'':'s'} →`;
+  $('#btn-start').textContent = n ? 'Change My Jobs' : 'Pick Your Jobs →';
+  $('#btn-start').classList.toggle('primary', !n);
+  $('#btn-start').classList.toggle('ghost', !!n);
+}
+
+/* ================= RENDER: PICK YOUR JOBS (colorful tiles) ================= */
+function renderTiles(){
   const q = ($('#wSearch').value||'').toLowerCase();
   const jobs = allJobs().filter(j=>!q || (j.name+' '+j.desc).toLowerCase().includes(q));
   const groups = [
-    ['Your custom jobs', jobs.filter(j=>j.custom)],
-    ['The classics', jobs.filter(j=>j.featured)],
-    ['More ideas', jobs.filter(j=>!j.featured && !j.custom)],
-  ].filter(g=>g[1].length);
-  $('#wGrid').innerHTML = groups.map(([title,list])=>`
-    <div class="job-group-title">${title}</div>
-    <div class="tiles">${list.map(j=>`
-      <button type="button" class="tile ${state.selected.includes(j.id)?'on':''}" data-id="${j.id}">
-        <div class="ico">${iconHTML(j.icon)}</div>
-        <div><div class="name">${esc(j.name)}</div><div class="desc">${esc(j.desc)}</div></div>
+    ['Your custom jobs','Made by you', jobs.filter(j=>j.custom)],
+    ['The classics','A great place to start', jobs.filter(j=>j.featured)],
+    ['More ideas','Mix and match', jobs.filter(j=>!j.featured && !j.custom)],
+  ].filter(g=>g[2].length);
+  let k = 0;
+  $('#wGrid').innerHTML = groups.map(([title,sub,list])=>`
+    <h3 class="group-title">${title}<small>${sub}</small></h3>
+    <div class="tiles">${list.map(j=>{ const on=state.selected.includes(j.id); return `
+      <button type="button" class="tile c${(k++%6)+1} ${on?'on':''}" data-id="${j.id}" aria-pressed="${on}">
         <span class="tick"><i data-lucide="check"></i></span>
-      </button>`).join('')}</div>`).join('') || '<p class="tip">No jobs match that search.</p>';
+        <div class="pic">${iconHTML(j.icon)}</div>
+        <div class="name">${esc(j.name)}</div>
+        <div class="desc">${esc(j.desc)}</div>
+        <span class="edit" data-edit title="Edit this job's words" role="button"><i data-lucide="pencil"></i></span>
+      </button>`; }).join('')}</div>`).join('') || '<p class="empty">No jobs match that search. Try another word, or add a <b>custom job</b>.</p>';
   lucide.createIcons();
   const n = state.selected.length;
   $('#wCount').textContent = n ? `${n} job${n===1?'':'s'} picked` : 'Pick at least one job to continue';
   $('#wGo').disabled = !n;
+  const picked = state.selected.map(getJob).filter(Boolean);
+  $('#wPicked').innerHTML = picked.slice(0,8).map(j=>`<span class="pip" title="${esc(j.name)}">${iconHTML(j.icon)}</span>`).join('') + (picked.length>8?`<span class="pip more">+${picked.length-8}</span>`:'');
+  lucide.createIcons();
 }
-function showWelcome(){ state.started=false; save(); document.body.classList.add('welcome'); $('#wSearch').value=''; renderWelcome(); window.scrollTo(0,0); }
-function startApp(){ state.started=true; save(); document.body.classList.remove('welcome'); renderJobs(); renderPreview(); applyZoom(); }
 function toggle(id,on){
   state.selected = state.selected.filter(x=>x!==id);
   if(on) state.selected.push(id);
-  save(); renderJobs(); renderPreview(); renderWelcome();
+  save(); renderJobs(); renderPreview(); renderTiles(); renderWelcome();
 }
+function addCustomJob(){
+  const id = 'custom-'+Date.now();
+  state.custom.push({id, name:'My Custom Job', desc:'Type what this job does here.', icon:{type:'openmoji',value:'2B50'}});
+  state.selected.push(id); save(); renderJobs(); renderPreview(); renderTiles(); renderWelcome(); openEdit(id);
+}
+function resetAll(){ if(confirm('Start over? This clears your picks, edits, custom jobs and uploaded pictures.')){ localStorage.removeItem(STORAGE_KEY); location.reload(); } }
 
 /* ================= SLIDESHOW ================= */
 let ssIndex = 0;
@@ -900,14 +1133,16 @@ function ssStep(d){ const n = ssIds().length; if(!n) return; ssIndex = (ssIndex 
 /* ================= POWERPOINT EXPORT ================= */
 // Slide colors per look (hex, no #). Chip colors are the on-white equivalents of the card tints.
 const PPT_THEMES = {
-  edu:     {bg:'FFFFFF',text:'1D2A44',title:'1D2A44',accent:'FF4C00',chip:'FFF7ED',head:'Poppins'},
-  sunshine:{bg:'FFF7ED',text:'1D2A44',title:'FF780D',accent:'FFBC0D',chip:'FFFFFF',head:'Poppins'},
+  circles: {bg:'FFF7ED',text:'1D2A44',title:'0094C7',accent:'004861',chip:'FFFFFF',head:'Zilla Slab'},
+  edu:     {bg:'FFFFFF',text:'1D2A44',title:'1D2A44',accent:'FF4C00',chip:'FFF7ED',head:'Zilla Slab'},
+  ribbon:  {bg:'FFFFFF',text:'1D2A44',title:'1D2A44',accent:'0094C7',chip:'FFF7ED',head:'Zilla Slab'},
+  sunshine:{bg:'FFF7ED',text:'1D2A44',title:'FF780D',accent:'FFBC0D',chip:'FFFFFF',head:'Zilla Slab'},
   stripe:  {bg:'FFFFFF',text:'1D2A44',title:'1D2A44',accent:'FF9B0D',chip:'FFF0DB',head:'Poppins'},
-  midnight:{bg:'1D2A44',text:'FFFFFF',title:'FFFFFF',accent:'FFBC0D',chip:'004861',head:'Poppins'},
-  pacific: {bg:'FFFFFF',text:'1D2A44',title:'0094C7',accent:'004861',chip:'D8F5FF',head:'Poppins'},
+  midnight:{bg:'1D2A44',text:'FFFFFF',title:'FFFFFF',accent:'FFBC0D',chip:'004861',head:'Zilla Slab'},
+  pacific: {bg:'FFFFFF',text:'1D2A44',title:'0094C7',accent:'004861',chip:'D8F5FF',head:'Zilla Slab'},
   teal:    {bg:'FFFFFF',text:'1D2A44',title:'00AFAB',accent:'00AFAB',chip:'D5F6F4',head:'Poppins'},
   green:   {bg:'FFFFFF',text:'1D2A44',title:'6FB300',accent:'6FB300',chip:'E8FAB9',head:'Poppins'},
-  purple:  {bg:'FFFFFF',text:'1D2A44',title:'532681',accent:'A973DF',chip:'F0E6F9',head:'Poppins'},
+  purple:  {bg:'FFFFFF',text:'1D2A44',title:'532681',accent:'A973DF',chip:'F0E6F9',head:'Zilla Slab'},
   pink:    {bg:'FFFFFF',text:'1D2A44',title:'E75CAE',accent:'F27179',chip:'FCE6E7',head:'Poppins'},
   slab:    {bg:'FFFFFF',text:'333333',title:'1D2A44',accent:'FF4C00',chip:'F2F2F0',head:'Zilla Slab'},
   hand:    {bg:'FFF7ED',text:'333333',title:'004861',accent:'FF9B0D',chip:'FFFFFF',head:'Caveat'},
@@ -952,10 +1187,12 @@ function pptDecos(pptx, sl, T, theme){
   const solid=(shape,o)=>sl.addShape(shape,{...o,fill:{color:o.c,transparency:o.t||0},line:noLine});
   const box=(inset,line,radius)=>sl.addShape(radius?RR:R,{x:inset,y:inset,w:W-2*inset,h:H-2*inset,fill:noFill,line,rectRadius:radius||0});
   switch(theme){
+    case 'circles':  solid(E,{x:-1.3,y:-1.4,w:3,h:3,c:'FFBC0D'}); solid(E,{x:8.7,y:-1,w:2.3,h:2.3,c:'4FD2FF'}); solid(E,{x:-1,y:4.5,w:2,h:2,c:'2AD2C9'}); solid(E,{x:8.1,y:3.8,w:3.2,h:3.2,c:'A973DF'}); break;
     case 'edu':      solid(R,{x:0,y:0,w:W,h:.3,c:'FF4C00'}); solid(R,{x:1.5,y:H-.32,w:7,h:.025,c:'FF4C00'}); break;
+    case 'ribbon':   { const cs=['E75CAE','A973DF','0094C7','2AD2C9','6FB300','FFBC0D','FF9B0D']; cs.forEach((c,i)=>{ solid(R,{x:i*W/7,y:0,w:W/7+.01,h:.28,c}); solid(R,{x:i*W/7,y:H-.12,w:W/7+.01,h:.12,c}); }); break; }
     case 'sunshine': solid(E,{x:7.9,y:-1.3,w:3.2,h:3.2,c:'FFBC0D',t:65}); solid(E,{x:-.9,y:4.3,w:2.2,h:2.2,c:'FF9B0D',t:75}); break;
     case 'stripe':   ['FF4C00','FF780D','FF9B0D','FFBC0D'].forEach((c,i)=>solid(R,{x:0,y:i*H/4,w:.3,h:H/4,c})); break;
-    case 'midnight': box(.2,{color:'FFFFFF',width:.75,transparency:65},.15); break;
+    case 'midnight': box(.2,{color:'FFFFFF',width:.75,transparency:65},.15); solid(E,{x:8.4,y:3.9,w:2.6,h:2.6,c:'0094C7',t:65}); break;
     case 'pacific':  box(.18,{color:'0094C7',width:2.25},.3); break;
     case 'teal':     for(let x=0;x<W;x+=.5){ solid(R,{x,y:0,w:.5,h:.3,c:(x/.5)%2?'2AD2C9':'00AFAB'}); solid(R,{x,y:H-.3,w:.5,h:.3,c:(x/.5)%2?'00AFAB':'2AD2C9'}); } break;
     case 'green':    box(.14,{color:'6FB300',width:1.5}); box(.22,{color:'BDF22E',width:.75}); break;
@@ -1011,14 +1248,14 @@ function renderPreview(){
   const pv = $('#preview');
   const ids = state.selected.filter(id=>getJob(id));
   if(!ids.length){
-    pv.innerHTML = `<p class="hint"><strong>Nothing to show yet.</strong><br>Check some jobs in the list on the left and your printable cards will appear here.</p>`;
+    pv.innerHTML = `<div class="hint"><strong>Nothing to show yet.</strong><p>Pick some jobs and your printable cards will appear right here.</p><button class="btn dark" data-go="jobs">Pick jobs →</button></div>`;
     return;
   }
   const per = {full:1, half:2, quarter:4}[state.size];
   const pages = [];
   for(let i=0;i<ids.length;i+=per) pages.push(ids.slice(i,i+per));
   let i=0;
-  pv.innerHTML = `<p class="edit-hint">Click any words on a card to change them. Click a picture to swap it.</p>` + pages.map(p=>`
+  pv.innerHTML = pages.map(p=>`
     <div class="sheet-wrap"><div class="sheet size-${state.size}">
       <div class="grid">${p.map(id=>cardHTML(id, i++, ids.length)).join('')}
         ${Array(per-p.length).fill('<div></div>').join('')}
@@ -1097,17 +1334,26 @@ document.addEventListener('DOMContentLoaded', ()=>{
   load();
   $('#className').value = state.className; $('#classYear').value = state.classYear;
   $('#showDesc').checked = state.showDesc; $('#showAssign').checked = state.showAssign; $('#showCut').checked = state.showCut;
-  document.body.classList.toggle('welcome', !state.started);
-  renderSwatches(); syncSize(); renderJobs(); renderPreview(); applyZoom(); renderWelcome();
-  // welcome screen
-  $('#wGrid').addEventListener('click', e=>{ const t=e.target.closest('.tile'); if(!t) return; toggle(t.dataset.id, !state.selected.includes(t.dataset.id)); });
-  $('#wSearch').addEventListener('input', renderWelcome);
-  $('#wClassics').onclick = ()=>{ state.selected=[...new Set([...state.selected, ...FEATURED_IDS])]; save(); renderJobs(); renderPreview(); renderWelcome(); };
-  $('#wClear').onclick = ()=>{ state.selected=[]; save(); renderJobs(); renderPreview(); renderWelcome(); };
-  $('#wGo').onclick = ()=>{ if(state.selected.length) startApp(); };
-  $('#backToWelcome').onclick = showWelcome;
+  renderSwatches(); syncSize(); renderJobs(); renderPreview(); renderTiles(); go('welcome');
+  // navigation: brand goes home, step pills and any [data-go] button switch screens
+  $('#btn-home').onclick = ()=>go('welcome');
+  document.addEventListener('click', e=>{ const b=e.target.closest('[data-go]'); if(b) go(b.dataset.go); });
+  $('#btn-start').onclick = ()=>go('jobs');
+  $('#btn-continue').onclick = ()=>go('design');
+  $('#btn-restart').onclick = resetAll;
+  // pick your jobs
+  $('#wGrid').addEventListener('click', e=>{
+    const t=e.target.closest('.tile'); if(!t) return;
+    if(e.target.closest('[data-edit]')) return openEdit(t.dataset.id);
+    toggle(t.dataset.id, !state.selected.includes(t.dataset.id));
+  });
+  $('#wSearch').addEventListener('input', renderTiles);
+  $('#wClassics').onclick = ()=>{ state.selected=[...new Set([...state.selected, ...FEATURED_IDS])]; save(); renderJobs(); renderPreview(); renderTiles(); renderWelcome(); };
+  $('#wClear').onclick = ()=>{ state.selected=[]; save(); renderJobs(); renderPreview(); renderTiles(); renderWelcome(); };
+  $('#wCustom').onclick = addCustomJob;
+  $('#wGo').onclick = ()=>go('design');
   // export + slideshow
-  $('#exportBtn').onclick = ()=>{ if(!state.selected.length) return alert('Pick at least one job first.'); $('#exportModal').classList.add('open'); };
+  $('#exportBtn').onclick = openExport;
   $('#exportPdf').onclick = ()=>{ $('#exportModal').classList.remove('open'); setTimeout(()=>window.print(), 150); };
   $('#exportShow').onclick = ()=>{ $('#exportModal').classList.remove('open'); openShow(); };
   $('#exportPptx').onclick = e=>exportPptx(e.currentTarget);
@@ -1124,7 +1370,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     else if(e.key==='End'){ ssIndex=ssIds().length-1; renderShow(); }
   });
   window.addEventListener('resize', ()=>{ if($('#show').classList.contains('open')) renderShow(); });
-  if(location.hash==='#slideshow' && state.selected.length){ state.started=true; document.body.classList.remove('welcome'); openShow(); }
+  if(location.hash==='#slideshow' && state.selected.length){ go('design'); openShow(); }
   $('#zoomIn').onclick = ()=>stepZoom(1);
   $('#zoomOut').onclick = ()=>stepZoom(-1);
   $('#zoomFit').onclick = ()=>setZoom('fit');
@@ -1135,24 +1381,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
   ['showDesc','showAssign','showCut'].forEach(k=>$('#'+k).addEventListener('change', e=>{ state[k]=e.target.checked; save(); renderPreview(); }));
   $('#swatches').addEventListener('click', e=>{ const b=e.target.closest('[data-theme]'); if(!b) return; state.theme=b.dataset.theme; save(); renderSwatches(); renderPreview(); });
   $('#sizeSeg').addEventListener('click', e=>{ const b=e.target.closest('[data-size]'); if(!b) return; state.size=b.dataset.size; save(); syncSize(); renderPreview(); });
-  $('#jobSearch').addEventListener('input', renderJobs);
 
   $('#jobList').addEventListener('click', e=>{
     const row = e.target.closest('.job'); if(!row) return; const id=row.dataset.id;
     if(e.target.closest('[data-pick]')) return openPicker(id);
     if(e.target.closest('[data-edit]')) return openEdit(id);
-    if(e.target.matches('[data-toggle]')) return toggle(id, e.target.checked);
-    // clicking the row toggles it too
-    toggle(id, !state.selected.includes(id));
+    const act = e.target.closest('[data-act]'); if(act) move(id, act.dataset.act);
   });
-  $('#selectFeatured').onclick = ()=>{ state.selected = [...new Set([...state.selected, ...FEATURED_IDS])]; save(); renderJobs(); renderPreview(); renderWelcome(); };
-  $('#clearAll').onclick = ()=>{ state.selected=[]; save(); renderJobs(); renderPreview(); renderWelcome(); };
-  $('#resetAll').onclick = ()=>{ if(confirm('Reset everything? This clears your picks, edits, custom jobs and uploaded pictures.')){ localStorage.removeItem(STORAGE_KEY); location.reload(); } };
-  $('#addCustom').onclick = ()=>{
-    const id = 'custom-'+Date.now();
-    state.custom.push({id, name:'My Custom Job', desc:'Type what this job does here.', icon:{type:'openmoji',value:'2B50'}});
-    state.selected.push(id); save(); renderJobs(); renderPreview(); openEdit(id);
-  };
+  $('#resetAll').onclick = resetAll;
+  $('#addCustom').onclick = addCustomJob;
 
   // ----- edit in place on the preview -----
   const pv = $('#preview');
@@ -1160,11 +1397,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const card = e.target.closest('.card'); if(!card) return; const id = card.dataset.id;
     const act = e.target.closest('[data-act]');
     if(e.target.closest('.art') || (act && act.dataset.act==='pic')) return openPicker(id);
-    if(!act) return;
-    const i = state.selected.indexOf(id);
-    if(act.dataset.act==='remove'){ toggle(id,false); }
-    if(act.dataset.act==='up' && i>0){ [state.selected[i-1],state.selected[i]]=[state.selected[i],state.selected[i-1]]; save(); renderPreview(); }
-    if(act.dataset.act==='down' && i<state.selected.length-1){ [state.selected[i+1],state.selected[i]]=[state.selected[i],state.selected[i+1]]; save(); renderPreview(); }
+    if(act) move(id, act.dataset.act);
   });
   // stop Enter from adding line breaks in one-line fields
   pv.addEventListener('keydown', e=>{
@@ -1210,11 +1443,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
   // edit modal
-  let editingId=null;
-  function openEdit(id){ editingId=id; const j=getJob(id); $('#editName').value=j.name; $('#editDesc').value=j.desc; $('#editDelete').style.display = j.custom?'':'none'; $('#editModal').classList.add('open'); $('#editName').focus(); }
   $('#editSave').onclick = ()=>{ setJob(editingId,{name:$('#editName').value.trim()||'Untitled Job', desc:$('#editDesc').value.trim()}); $('#editModal').classList.remove('open'); };
-  $('#editDelete').onclick = ()=>{ state.custom = state.custom.filter(c=>c.id!==editingId); state.selected=state.selected.filter(x=>x!==editingId); save(); renderJobs(); renderPreview(); $('#editModal').classList.remove('open'); };
+  $('#editPic').onclick = ()=>{ $('#editModal').classList.remove('open'); openPicker(editingId); };
+  $('#editDelete').onclick = ()=>{ state.custom = state.custom.filter(c=>c.id!==editingId); state.selected=state.selected.filter(x=>x!==editingId); save(); renderJobs(); renderPreview(); renderTiles(); renderWelcome(); $('#editModal').classList.remove('open'); };
 });
+let editingId=null;
+function openEdit(id){ editingId=id; const j=getJob(id); if(!j) return; $('#editTitle').textContent = j.custom ? 'Edit your custom job' : 'Edit job'; $('#editName').value=j.name; $('#editDesc').value=j.desc; $('#editDelete').style.display = j.custom?'':'none'; $('#editModal').classList.add('open'); $('#editName').focus(); }
 function syncSize(){ document.querySelectorAll('#sizeSeg button').forEach(b=>b.classList.toggle('active',b.dataset.size===state.size)); }
 
 // Shrink uploaded images so they fit in browser storage and print crisply. SVGs are kept as-is.
